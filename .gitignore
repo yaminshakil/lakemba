@@ -1,0 +1,30 @@
+# ── Node / Next.js ──────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/.next/
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+frontend/build.log
+frontend/start.log
+frontend/tsconfig.tsbuildinfo
+
+# ── Laravel / PHP ────────────────────────────────────────────────────────────
+backend_fresh/vendor/
+backend_fresh/.env
+backend_fresh/storage/logs/*.log
+backend_fresh/storage/framework/cache/
+backend_fresh/storage/framework/sessions/
+backend_fresh/storage/framework/views/
+backend_fresh/bootstrap/cache/*.php
+backend_fresh/public/hot
+backend_fresh/public/storage
+
+# ── OS / Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.suo
+*.user

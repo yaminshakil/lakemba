@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1E3A5F;
+  --primary-dark: #0F2C59;
+  --teal: #0D9488;
+  --light-blue: #EBF4FF;
+  --soft-bg: #F8FAFC;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #F8FAFC;
+  color: #1E293B;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body { background-color: #0F172A; color: #E2E8F0; }
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-primary-800 text-white font-semibold rounded-xl
+           shadow-primary hover:bg-primary-900 hover:-translate-y-0.5 active:translate-y-0
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+  }
+  .btn-teal {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-teal-600 text-white font-semibold rounded-xl
+           shadow-lg hover:bg-teal-500 hover:-translate-y-0.5 active:translate-y-0
+           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-teal-400 focus:ring-offset-2;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-6 py-3 border-2 border-primary-800 text-primary-800
+           font-semibold rounded-xl hover:bg-primary-800 hover:text-white hover:-translate-y-0.5
+           transition-all duration-200;
+  }
+  .btn-white {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-white text-primary-800
+           font-semibold rounded-xl shadow-card hover:shadow-hover hover:-translate-y-0.5
+           transition-all duration-200;
+  }
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
+  }
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-primary-900 leading-tight;
+  }
+  .section-subtitle {
+    @apply text-base md:text-lg text-slate-500 max-w-2xl;
+  }
+  .card {
+    @apply bg-white rounded-2xl shadow-card hover:shadow-hover transition-all duration-300 overflow-hidden;
+  }
+  .input {
+    @apply w-full px-4 py-3 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           transition-all duration-200 bg-white;
+  }
+  .label {
+    @apply block text-sm font-medium text-gray-700 mb-1.5;
+  }
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-800 to-teal-600;
+  }
+  .bg-medical-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* Custom scrollbar for desktop */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #94A3B8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #64748B; }
+
+/* Swiper overrides */
+.swiper-pagination-bullet { background: #94A3B8; opacity: 1; }
+.swiper-pagination-bullet-active { background: #1E3A5F; }
+
+/* Skeleton animation */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
