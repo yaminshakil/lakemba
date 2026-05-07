@@ -61,12 +61,12 @@ export default function AboutPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-primary-900/30 to-transparent" />
                   <div className="absolute bottom-6 left-6 right-6 glass-card px-5 py-4">
-                    <div className="flex items-center gap-4 text-white">
-                      <div className="text-center"><div className="text-2xl font-bold">15+</div><div className="text-xs text-white/70">Years</div></div>
-                      <div className="w-px h-10 bg-white/20" />
-                      <div className="text-center"><div className="text-2xl font-bold">5K+</div><div className="text-xs text-white/70">Patients</div></div>
-                      <div className="w-px h-10 bg-white/20" />
-                      <div className="text-center"><div className="text-2xl font-bold">10+</div><div className="text-xs text-white/70">Doctors</div></div>
+                    <div className="flex items-center gap-3 sm:gap-4 text-white">
+                      <div className="text-center"><div className="text-lg sm:text-2xl font-bold">15+</div><div className="text-xs text-white/70">Years</div></div>
+                      <div className="w-px h-8 sm:h-10 bg-white/20" />
+                      <div className="text-center"><div className="text-lg sm:text-2xl font-bold">5K+</div><div className="text-xs text-white/70">Patients</div></div>
+                      <div className="w-px h-8 sm:h-10 bg-white/20" />
+                      <div className="text-center"><div className="text-lg sm:text-2xl font-bold">10+</div><div className="text-xs text-white/70">Doctors</div></div>
                     </div>
                   </div>
                 </div>

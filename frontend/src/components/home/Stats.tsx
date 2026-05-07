@@ -30,15 +30,15 @@ export default function Stats() {
           {STATS.map(({ icon: Icon, value, suffix, label, color }, i) => (
             <div
               key={label}
-              className="relative group text-center p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"
+              className="relative group text-center p-5 sm:p-8 rounded-3xl bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-1 transition-all duration-300"
             >
               {/* Icon */}
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center mx-auto mb-5 shadow-lg`}>
-                <Icon className="w-7 h-7 text-white" />
+              <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg`}>
+                <Icon className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
               </div>
 
               {/* Number */}
-              <div className="text-5xl md:text-6xl font-bold text-white mb-2 tabular-nums leading-none">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 tabular-nums leading-none">
                 {inView
                   ? <CountUp end={value} duration={2.5} suffix={suffix} delay={i * 0.15} />
                   : `0${suffix}`}

@@ -30,7 +30,7 @@ export default function StickyBooking() {
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                className="bg-white rounded-2xl shadow-hover border border-gray-100 p-4 w-60"
+                className="bg-white rounded-2xl shadow-hover border border-gray-100 p-4 w-[calc(100vw-3rem)] max-w-[15rem]"
               >
                 <p className="text-sm font-semibold text-primary-900 mb-3">Quick Contact</p>
                 <div className="flex flex-col gap-2">

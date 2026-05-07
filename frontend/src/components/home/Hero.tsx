@@ -7,10 +7,8 @@ import { Calendar, Phone, ArrowDown, ShieldCheck, Clock, MapPin } from 'lucide-r
 import HotDocWidget from '@/components/booking/HotDocWidget'
 import { getHomepageSection } from '@/lib/api'
 
-const DEFAULT_IMAGE = 'https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=1920&q=90'
-
 export default function Hero() {
-  const [heroImage, setHeroImage] = useState(DEFAULT_IMAGE)
+  const [heroImage, setHeroImage] = useState<string | null>(null)
 
   useEffect(() => {
     getHomepageSection('hero')
@@ -24,15 +22,19 @@ export default function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
 
-      {/* Full-width background image */}
-      <div className="absolute inset-0 z-0">
-        <Image
-          src={heroImage}
-          alt="Lakemba General Medical Practice"
-          fill
-          className="object-cover object-center"
-          priority
-        />
+      {/* Background: image (if set) or solid dark colour */}
+      <div className="absolute inset-0 z-0 bg-primary-950">
+        {heroImage && (
+          <Image
+            src={heroImage}
+            alt="Lakemba General Medical Practice"
+            fill
+            className="object-cover object-center"
+            priority
+          />
+        )}
+        {/* Solid black transparent layer for text readability */}
+        <div className="absolute inset-0 bg-black/60" />
         {/* Dark gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary-950/92 via-primary-900/80 to-primary-800/50" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary-950/60 via-transparent to-transparent" />
@@ -44,7 +46,7 @@ export default function Hero() {
       <div className="absolute inset-0 z-0 bg-medical-pattern opacity-10" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-32 pb-16 sm:pb-24">
         <div className="grid lg:grid-cols-2 gap-10 items-center">
 
           {/* Left: Text */}
@@ -63,7 +65,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6"
             >
               Your Health,{' '}
               <span className="relative inline-block">

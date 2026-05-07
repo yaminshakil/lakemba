@@ -59,7 +59,7 @@ export default function Testimonials() {
               <motion.div
                 key={t.id}
                 whileHover={{ y: -4 }}
-                className="glass-card p-7 min-w-[300px] md:min-w-[360px] flex-shrink-0 snap-start relative"
+                className="glass-card p-5 sm:p-7 min-w-[85vw] sm:min-w-[300px] md:min-w-[360px] flex-shrink-0 snap-start relative"
               >
                 <Quote className="absolute top-5 right-5 w-8 h-8 text-white/15 fill-white/10" />
                 <StarRating rating={t.rating} />

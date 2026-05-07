@@ -46,9 +46,9 @@ export default function BookingPage() {
 
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-3 gap-10">
+            <div className="grid md:grid-cols-3 gap-10">
               {/* HotDoc iframe - large embed */}
-              <div className="lg:col-span-2">
+              <div className="md:col-span-2">
                 <AnimatedSection direction="left">
                   <div className="card overflow-hidden">
                     <div className="bg-primary-800 px-6 py-4 flex items-center gap-3">

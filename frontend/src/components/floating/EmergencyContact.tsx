@@ -14,7 +14,7 @@ export default function EmergencyContact() {
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
-            className="absolute bottom-14 left-0 w-72 bg-white rounded-2xl shadow-hover border border-red-100 overflow-hidden"
+            className="absolute bottom-14 left-0 w-[calc(100vw-3rem)] max-w-xs bg-white rounded-2xl shadow-hover border border-red-100 overflow-hidden"
           >
             <div className="bg-red-600 px-4 py-3 flex items-center justify-between">
               <span className="text-white font-semibold text-sm flex items-center gap-2">

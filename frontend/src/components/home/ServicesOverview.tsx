@@ -45,7 +45,7 @@ export default function ServicesOverview() {
                 return (
                   <AnimatedSection key={service.id} delay={i * 0.08}>
                     <motion.div whileHover={{ y: -4 }} className="card p-7 group cursor-pointer h-full">
-                      <div className="w-13 h-13 w-12 h-12 rounded-2xl bg-medical-light flex items-center justify-center mb-5 group-hover:bg-primary-800 transition-all duration-300">
+                      <div className="w-12 h-12 rounded-2xl bg-medical-light flex items-center justify-center mb-5 group-hover:bg-primary-800 transition-all duration-300">
                         <Icon className="w-6 h-6 text-primary-700 group-hover:text-white transition-colors duration-300" />
                       </div>
                       <h3 className="font-bold text-primary-900 text-lg mb-3 group-hover:text-primary-700 transition-colors">
