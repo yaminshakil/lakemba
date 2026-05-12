@@ -5,9 +5,7 @@ import { ArrowLeft, Calendar, Tag, User, Clock } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import { useApi } from '@/hooks/useApi'
 import { getBlogPost } from '@/lib/api'
 import { formatDate, getImageUrl } from '@/lib/utils'
@@ -108,14 +106,12 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             <AnimatedSection delay={0.2} className="mt-10 card p-8 text-center bg-medical-soft">
               <h3 className="font-bold text-primary-900 text-xl mb-2">Have questions about your health?</h3>
               <p className="text-gray-500 mb-5">Our experienced GPs are here to help. Book an appointment today.</p>
-              <HotDocWidget mode="lightbox" buttonText="Book an Appointment" />
+              <HealthEngineWidget mode="lightbox" buttonText="Book an Appointment" />
             </AnimatedSection>
           </div>
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

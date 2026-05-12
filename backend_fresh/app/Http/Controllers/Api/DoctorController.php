@@ -32,8 +32,21 @@ class DoctorController extends Controller
         return new DoctorResource($doctor);
     }
 
+    private function decodeJsonArrayFields(Request $request): void
+    {
+        foreach (['languages', 'available_days', 'social_links'] as $field) {
+            $value = $request->input($field);
+            if (is_string($value)) {
+                $decoded = json_decode($value, true);
+                $request->merge([$field => is_array($decoded) ? $decoded : []]);
+            }
+        }
+    }
+
     public function store(Request $request)
     {
+        $this->decodeJsonArrayFields($request);
+
         $validated = $request->validate([
             'name'             => 'required|string|max:200',
             'qualifications'   => 'required|string|max:300',
@@ -60,6 +73,8 @@ class DoctorController extends Controller
 
     public function update(Request $request, Doctor $doctor)
     {
+        $this->decodeJsonArrayFields($request);
+
         $validated = $request->validate([
             'name'             => 'sometimes|string|max:200',
             'qualifications'   => 'sometimes|string|max:300',

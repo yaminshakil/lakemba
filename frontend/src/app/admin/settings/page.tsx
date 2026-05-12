@@ -1,8 +1,11 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X, Bell } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getHomepageSection, adminUploadHomepageImage } from '@/lib/api'
+import { getHomepageSection, adminUploadHomepageImage, adminUploadLogo, getSetting, getSettings, adminUpdateSettings, adminSendTestEmail, bustCache } from '@/lib/api'
+import { getImageUrl } from '@/lib/utils'
+import { useAuth } from '@/context/AuthContext'
 
 const SECTIONS = [
   {
@@ -13,7 +16,7 @@ const SECTIONS = [
       { key: 'phone_primary',   label: 'Primary Phone',   type: 'tel',  placeholder: '(02) 9759 1234' },
       { key: 'phone_secondary', label: 'Secondary Phone',  type: 'tel',  placeholder: '(02) 9759 1235' },
       { key: 'email_primary',   label: 'Primary Email',   type: 'email',placeholder: 'info@lakembagmp.com.au' },
-      { key: 'address',         label: 'Street Address',  type: 'text', placeholder: '123 Lakemba Street' },
+      { key: 'address',         label: 'Street Address',  type: 'text', placeholder: '18 The Boulevarde' },
       { key: 'suburb',          label: 'Suburb',          type: 'text', placeholder: 'Lakemba' },
       { key: 'state',           label: 'State',           type: 'text', placeholder: 'NSW' },
       { key: 'postcode',        label: 'Postcode',        type: 'text', placeholder: '2195' },
@@ -34,32 +37,186 @@ const SECTIONS = [
     icon: Share2,
     title: 'Social Media Links',
     fields: [
-      { key: 'facebook_url',  label: 'Facebook URL',  type: 'url', placeholder: 'https://facebook.com/...' },
-      { key: 'instagram_url', label: 'Instagram URL', type: 'url', placeholder: 'https://instagram.com/...' },
-      { key: 'twitter_url',   label: 'Twitter URL',   type: 'url', placeholder: 'https://twitter.com/...' },
+      { key: 'facebook_url',  label: 'Facebook URL',  type: 'url', placeholder: 'https://facebook.com/lakembagmp' },
+      { key: 'instagram_url', label: 'Instagram URL', type: 'url', placeholder: 'https://instagram.com/lakembagmp' },
+      { key: 'twitter_url',   label: 'Twitter / X URL', type: 'url', placeholder: 'https://twitter.com/lakembagmp' },
     ],
   },
   {
     id: 'seo',
     icon: Search,
     title: 'SEO Settings',
+    hint: 'These values appear in Google search results and when your pages are shared on social media.',
     fields: [
-      { key: 'seo_title',       label: 'Default Page Title',      type: 'text',     placeholder: 'Lakemba General Medical Practice' },
-      { key: 'seo_description', label: 'Default Meta Description', type: 'textarea', placeholder: 'Trusted healthcare in Lakemba...' },
-      { key: 'seo_keywords',    label: 'Keywords',                 type: 'text',     placeholder: 'Lakemba GP, doctor, bulk billing...' },
+      { key: 'seo_title',                label: 'Default Page Title',           type: 'text',     placeholder: 'Lakemba General Medical Practice | Trusted GP' },
+      { key: 'seo_description',          label: 'Default Meta Description',     type: 'textarea', placeholder: 'Trusted, compassionate healthcare in Lakemba. Bulk billing available...' },
+      { key: 'seo_keywords',             label: 'Focus Keywords (comma-separated)', type: 'text', placeholder: 'Lakemba GP, bulk billing, doctor Lakemba, HealthEngine' },
+      { key: 'seo_og_image_url',         label: 'Social Share Image URL',       type: 'url',      placeholder: 'https://lakembagmp.com.au/og-image.jpg' },
+      { key: 'seo_google_verification',  label: 'Google Search Console Verification Code', type: 'text', placeholder: 'Paste the content="..." value from Google' },
+      { key: 'seo_bing_verification',    label: 'Bing Webmaster Verification Code',         type: 'text', placeholder: 'Paste the content="..." value from Bing' },
+      { key: 'seo_twitter_handle',       label: 'Twitter / X Handle',           type: 'text',     placeholder: '@lakembagmp' },
     ],
   },
   {
-    id: 'hotdoc',
+    id: 'notifications',
+    icon: Bell,
+    title: 'Email Notifications',
+    hint: 'Configure where contact form messages are delivered.',
+    fields: [
+      { key: 'notification_email', label: 'Notification Email',         type: 'email', placeholder: 'admin@lakembagmp.com.au' },
+      { key: 'mail_from_name',     label: 'Sender Name (From)',         type: 'text',  placeholder: 'Lakemba General Medical Practice' },
+      { key: 'mail_from_address',  label: 'Sender Email (From)',        type: 'email', placeholder: 'info@lakembagmp.com.au' },
+      { key: 'mail_host',          label: 'SMTP Host',                  type: 'text',  placeholder: 'smtp.gmail.com' },
+      { key: 'mail_port',          label: 'SMTP Port',                  type: 'text',  placeholder: '587' },
+      { key: 'mail_username',      label: 'SMTP Username',              type: 'email', placeholder: 'you@gmail.com' },
+      { key: 'mail_password',      label: 'SMTP Password / App Password', type: 'password', placeholder: '••••••••••••' },
+      { key: 'mail_encryption',    label: 'Encryption',                 type: 'text',  placeholder: 'tls' },
+    ],
+  },
+  {
+    id: 'healthengine',
     icon: Globe,
     title: 'Booking Integration',
     fields: [
-      { key: 'hotdoc_practice_id', label: 'HotDoc Practice ID',  type: 'text', placeholder: 'your-practice-id' },
-      { key: 'hotdoc_url',         label: 'HotDoc Booking URL',   type: 'url',  placeholder: 'https://www.hotdoc.com.au/...' },
-      { key: 'google_maps_key',    label: 'Google Maps API Key',  type: 'text', placeholder: 'AIza...' },
+      { key: 'healthengine_url', label: 'HealthEngine Booking URL', type: 'url',  placeholder: 'https://healthengine.com.au/book-appointment/...' },
+      { key: 'google_maps_key',  label: 'Google Maps API Key',      type: 'text', placeholder: 'AIza...' },
     ],
   },
 ]
+
+function LogoUploadSection() {
+  const [currentLogo, setCurrentLogo] = useState<string | null>(null)
+  const [preview, setPreview] = useState<string | null>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    getSetting('site_logo')
+      .then(res => {
+        const path = res.data?.data?.value
+        if (path) setCurrentLogo(getImageUrl(path))
+      })
+      .catch(() => {})
+  }, [])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setFile(f)
+    setPreview(URL.createObjectURL(f))
+    setStatus('idle')
+  }
+
+  const handleClear = () => {
+    setFile(null)
+    setPreview(null)
+    setStatus('idle')
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
+  const handleUpload = async () => {
+    if (!file) return
+    setUploading(true)
+    setStatus('idle')
+    try {
+      const fd = new FormData()
+      fd.append('logo', file)
+      const res = await adminUploadLogo(fd)
+      const url = res.data?.data?.logo_url
+      setCurrentLogo(url)
+      setPreview(null)
+      setFile(null)
+      setStatus('saved')
+      if (url) localStorage.setItem('site_logo_url', url)
+      if (inputRef.current) inputRef.current.value = ''
+    } catch {
+      setStatus('error')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const displayed = preview || currentLogo
+
+  return (
+    <AnimatedSection>
+      <div className="card overflow-hidden">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 bg-medical-soft">
+          <div className="w-8 h-8 rounded-lg bg-primary-800 flex items-center justify-center">
+            <ImageIcon className="w-4 h-4 text-white" />
+          </div>
+          <h3 className="font-bold text-primary-900">Site Logo</h3>
+        </div>
+
+        <div className="p-6 space-y-5">
+          <div className="flex items-start gap-4 flex-wrap sm:flex-nowrap sm:gap-6">
+            <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center shrink-0">
+              {displayed ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={displayed} alt="Logo preview" className="w-full h-full object-contain p-2" />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-1 text-gray-400">
+                  <ImageIcon className="w-6 h-6" />
+                  <span className="text-xs">No logo</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 space-y-3">
+              {preview && (
+                <span className="inline-block px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full font-medium">
+                  Unsaved preview
+                </span>
+              )}
+              <div className="flex items-center gap-3">
+                <label className="flex-1 cursor-pointer">
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                  <div className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-600 hover:border-primary-400 hover:text-primary-700 transition-colors">
+                    <Upload className="w-4 h-4" />
+                    {file ? file.name : 'Choose logo…'}
+                  </div>
+                </label>
+
+                {file && (
+                  <button onClick={handleClear} className="p-2.5 text-gray-400 hover:text-red-500 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+
+                <button
+                  onClick={handleUpload}
+                  disabled={!file || uploading}
+                  className="btn-teal disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploading
+                    ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    : <Save className="w-4 h-4" />}
+                  {uploading ? 'Uploading…' : 'Upload'}
+                </button>
+              </div>
+              <p className="text-xs text-gray-400">PNG or SVG with transparent background recommended. Max 2 MB. Displays in the site header.</p>
+            </div>
+          </div>
+
+          {status === 'saved' && (
+            <p className="text-sm text-teal-600 font-medium">Logo uploaded successfully.</p>
+          )}
+          {status === 'error' && (
+            <p className="text-sm text-red-500 font-medium">Upload failed. Please try again.</p>
+          )}
+        </div>
+      </div>
+    </AnimatedSection>
+  )
+}
 
 function HeroImageSection() {
   const [currentImage, setCurrentImage] = useState<string | null>(null)
@@ -196,18 +353,54 @@ function HeroImageSection() {
 }
 
 export default function AdminSettingsPage() {
+  const router = useRouter()
+  const { isAdmin } = useAuth()
   const [values, setValues] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState(false)
+  const [testStatus, setTestStatus] = useState<'idle' | 'sending' | 'ok' | 'error'>('idle')
+  const [testMessage, setTestMessage] = useState('')
+
+  useEffect(() => {
+    if (!isAdmin) router.replace('/admin')
+  }, [isAdmin, router])
+
+  useEffect(() => {
+    getSettings()
+      .then(res => { if (res.data?.data) setValues(res.data.data as Record<string, string>) })
+      .catch(() => {})
+  }, [])
 
   const handleChange = (key: string, val: string) => setValues(v => ({ ...v, [key]: val }))
 
+  const handleTestEmail = async () => {
+    setTestStatus('sending')
+    setTestMessage('')
+    try {
+      const res = await adminSendTestEmail()
+      setTestMessage(res.data?.message || 'Test email sent.')
+      setTestStatus('ok')
+    } catch (err: any) {
+      setTestMessage(err?.response?.data?.message || 'Failed to send. Check your SMTP settings.')
+      setTestStatus('error')
+    } finally {
+      setTimeout(() => setTestStatus('idle'), 6000)
+    }
+  }
+
   const handleSave = async () => {
     setSaving(true)
+    setSaveError(false)
     try {
-      // await adminUpdateSettings(values)
+      await adminUpdateSettings(values)
+      bustCache('/settings')
+      if (values.healthengine_url) localStorage.setItem('healthengine_url', values.healthengine_url)
       setSaved(true)
-      setTimeout(() => setSaved(false), 2000)
+      setTimeout(() => setSaved(false), 3000)
+    } catch {
+      setSaveError(true)
+      setTimeout(() => setSaveError(false), 4000)
     } finally {
       setSaving(false)
     }
@@ -215,18 +408,21 @@ export default function AdminSettingsPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Site Settings</h2>
           <p className="text-gray-400 text-sm">Manage global site configuration and content</p>
         </div>
-        <button onClick={handleSave} disabled={saving}
-          className="btn-teal">
-          {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
-          {saved ? 'Saved!' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-3">
+          {saveError && <span className="text-sm text-red-500 font-medium">Save failed. Try again.</span>}
+          <button onClick={handleSave} disabled={saving} className="btn-teal">
+            {saving ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+            {saved ? 'Saved!' : 'Save Changes'}
+          </button>
+        </div>
       </AnimatedSection>
 
+      <LogoUploadSection />
       <HeroImageSection />
 
       {SECTIONS.map((section, si) => {
@@ -238,7 +434,12 @@ export default function AdminSettingsPage() {
                 <div className="w-8 h-8 rounded-lg bg-primary-800 flex items-center justify-center">
                   <Icon className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="font-bold text-primary-900">{section.title}</h3>
+                <div>
+                  <h3 className="font-bold text-primary-900">{section.title}</h3>
+                  {'hint' in section && section.hint && (
+                    <p className="text-xs text-gray-400 mt-0.5">{section.hint}</p>
+                  )}
+                </div>
               </div>
               <div className="p-6 grid sm:grid-cols-2 gap-4">
                 {section.fields.map(({ key, label, type, placeholder }) => (
@@ -252,6 +453,26 @@ export default function AdminSettingsPage() {
                   </div>
                 ))}
               </div>
+              {section.id === 'notifications' && (
+                <div className="px-6 pb-5 flex items-center gap-3 flex-wrap border-t border-gray-100 pt-4">
+                  <button
+                    type="button"
+                    onClick={handleTestEmail}
+                    disabled={testStatus === 'sending'}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-50 text-primary-800 text-sm font-semibold hover:bg-primary-100 transition-colors disabled:opacity-50"
+                  >
+                    {testStatus === 'sending'
+                      ? <><span className="w-3.5 h-3.5 border-2 border-primary-400 border-t-primary-800 rounded-full animate-spin" /> Sending…</>
+                      : <><Bell className="w-3.5 h-3.5" /> Send Test Email</>
+                    }
+                  </button>
+                  {testStatus === 'ok'    && <span className="text-sm text-teal-600 font-medium">{testMessage}</span>}
+                  {testStatus === 'error' && <span className="text-sm text-red-500 font-medium">{testMessage}</span>}
+                  <p className="w-full text-xs text-gray-400 mt-1">
+                    Save settings first, then click Send Test Email to verify your SMTP configuration.
+                  </p>
+                </div>
+              )}
             </div>
           </AnimatedSection>
         )

@@ -2,8 +2,9 @@
 import { useState } from 'react'
 import { Plus, Pencil, Trash2, Star } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useApi } from '@/hooks/useApi'
-import { getTestimonials, adminDeleteTestimonial, adminCreateTestimonial } from '@/lib/api'
+import { getTestimonials, adminDeleteTestimonial, adminCreateTestimonial, bustCache } from '@/lib/api'
 
 export default function AdminTestimonialsPage() {
   const { data, loading, refetch } = useApi(() => getTestimonials())
@@ -11,6 +12,8 @@ export default function AdminTestimonialsPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ patient_name: '', rating: 5, review: '', service: '', date: '', is_featured: false })
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState<number | null>(null)
+  const [confirmDel, setConfirmDel] = useState<{ id: number; name: string } | null>(null)
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,15 +27,17 @@ export default function AdminTestimonialsPage() {
     finally { setSaving(false) }
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this testimonial?')) return
-    try { await adminDeleteTestimonial(id); refetch() }
-    catch { alert('Failed to delete.') }
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDel) return
+    setDeleting(confirmDel.id)
+    try { await adminDeleteTestimonial(confirmDel.id); bustCache('/testimonials'); refetch() }
+    catch { /* silently handled */ }
+    finally { setDeleting(null); setConfirmDel(null) }
   }
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Testimonials</h2>
           <p className="text-gray-400 text-sm">{testimonials.length} reviews</p>
@@ -102,7 +107,7 @@ export default function AdminTestimonialsPage() {
                 </div>
                 <p className="text-gray-500 text-sm line-clamp-2">{t.review}</p>
               </div>
-              <button onClick={() => handleDelete(t.id)}
+              <button onClick={() => setConfirmDel({ id: t.id, name: t.patient_name })} disabled={deleting === t.id}
                 className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors shrink-0">
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
               </button>
@@ -110,6 +115,15 @@ export default function AdminTestimonialsPage() {
           </AnimatedSection>
         ))}
       </div>
+      <ConfirmDialog
+        open={!!confirmDel}
+        title="Delete Testimonial"
+        message={`Delete the review from ${confirmDel?.name ?? 'this patient'}? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        loading={deleting !== null}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirmDel(null)}
+      />
     </div>
   )
 }

@@ -129,7 +129,7 @@ class DatabaseSeeder extends Seeder
         // ── FAQs ─────────────────────────────────────────────────────────────────
         $faqs = [
             ['question' => 'Do you offer bulk billing?',                       'answer' => 'Yes. Bulk billing is available for eligible Medicare patients including concession card holders, children under 16, and patients over 65.', 'category' => 'Billing',      'order' => 1],
-            ['question' => 'How do I book an appointment?',                    'answer' => 'You can book online 24/7 via HotDoc, call us at (02) 9759 1234 during business hours, or walk in. Same-day appointments often available.', 'category' => 'Appointments', 'order' => 2],
+            ['question' => 'How do I book an appointment?',                    'answer' => 'You can book online 24/7 via HealthEngine, call us at (02) 9759 1234 during business hours, or walk in. Same-day appointments often available.', 'category' => 'Appointments', 'order' => 2],
             ['question' => 'What should I bring to my first appointment?',     'answer' => 'Please bring your Medicare card, any concession cards, a list of current medications, referral letters, and previous test results.',        'category' => 'Appointments', 'order' => 3],
             ['question' => 'Do you speak languages other than English?',       'answer' => 'Yes! Our team speaks Arabic, Mandarin, Cantonese, Vietnamese, and French. We can arrange interpreters for other languages.',              'category' => 'General',      'order' => 4],
             ['question' => 'What happens if I need care after hours?',         'answer' => 'For non-emergencies after hours, call 13 SICK (13 7425). For life-threatening emergencies, call 000 immediately.',                        'category' => 'General',      'order' => 5],
@@ -155,7 +155,7 @@ class DatabaseSeeder extends Seeder
             ['key' => 'hours_sat',        'value' => '9:00am – 1:00pm',               'group' => 'hours'],
             ['key' => 'hours_sun',        'value' => 'Closed',                         'group' => 'hours'],
             ['key' => 'seo_home_title',   'value' => 'Lakemba General Medical Practice | Your Local GP', 'group' => 'seo'],
-            ['key' => 'seo_home_description','value' => 'Quality, compassionate GP care in Lakemba NSW. Bulk billing available. Book online with HotDoc.', 'group' => 'seo'],
+            ['key' => 'seo_home_description','value' => 'Quality, compassionate GP care in Lakemba NSW. Bulk billing available. Book online with HealthEngine.', 'group' => 'seo'],
         ];
 
         foreach ($settings as $setting) {

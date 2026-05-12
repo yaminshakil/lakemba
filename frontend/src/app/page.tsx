@@ -1,23 +1,29 @@
-export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
+import dynamic from 'next/dynamic'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Hero from '@/components/home/Hero'
 import QuickBooking from '@/components/home/QuickBooking'
-import Stats from '@/components/home/Stats'
-import ServicesOverview from '@/components/home/ServicesOverview'
 import DoctorHighlights from '@/components/home/DoctorHighlights'
-import Testimonials from '@/components/home/Testimonials'
-import Gallery from '@/components/home/Gallery'
-import Insurance from '@/components/home/Insurance'
-import FAQSection from '@/components/home/FAQSection'
-import ContactSection from '@/components/home/ContactSection'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import ServicesOverview from '@/components/home/ServicesOverview'
+
+const FAQSection      = dynamic(() => import('@/components/home/FAQSection'))
+const ContactSection  = dynamic(() => import('@/components/home/ContactSection'))
 
 export const metadata: Metadata = {
-  title: 'Lakemba General Medical Practice | Trusted GP in Lakemba NSW',
-  description: 'Quality, compassionate healthcare in Lakemba. Bulk billing available. Book online with HotDoc. Expert GPs speaking Arabic, Mandarin, Vietnamese & more.',
+  title: 'Lakemba General Medical Practice | Trusted Bulk Billing GP – Lakemba NSW 2195',
+  description:
+    'Your local GP clinic in Lakemba, NSW. Bulk billing for eligible patients, same-day appointments, and multilingual doctors speaking Arabic, Mandarin & Vietnamese. Book online with HealthEngine.',
+  keywords: [
+    'Lakemba GP', 'bulk billing doctor Lakemba', 'same day appointment Lakemba',
+    'HealthEngine Lakemba', 'Arabic speaking doctor Sydney', 'medical centre Lakemba NSW 2195',
+  ],
+  alternates: { canonical: 'https://lakembagmp.com.au' },
+  openGraph: {
+    title: 'Lakemba General Medical Practice | Bulk Billing GP – Lakemba NSW',
+    description: 'Bulk billing GP clinic in Lakemba. Multilingual doctors, online bookings, same-day appointments.',
+    url: 'https://lakembagmp.com.au',
+  },
 }
 
 export default function HomePage() {
@@ -27,18 +33,12 @@ export default function HomePage() {
       <main>
         <Hero />
         <QuickBooking />
-        <Stats />
-        <ServicesOverview />
         <DoctorHighlights />
-        <Testimonials />
-        <Gallery />
-        <Insurance />
+        <ServicesOverview />
         <FAQSection />
         <ContactSection />
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

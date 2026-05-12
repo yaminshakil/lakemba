@@ -6,9 +6,7 @@ import { ArrowLeft, Star, Languages, Calendar, Award, Mail, CheckCircle2 } from 
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import { useApi } from '@/hooks/useApi'
 import { getDoctor } from '@/lib/api'
 import { getImageUrl, sortDays } from '@/lib/utils'
@@ -69,12 +67,12 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/15 rounded-full text-teal-200 text-xs font-semibold mb-3">
                   <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" /> {doctor.experience_years}+ Years Experience
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-1">{doctor.name}</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">{doctor.name}</h1>
                 <p className="text-teal-300 font-semibold mb-1">{doctor.qualifications}</p>
                 <p className="text-white/70">{doctor.specialty}</p>
               </div>
               <div className="md:ml-auto">
-                <HotDocWidget mode="lightbox" buttonText="Book with Dr." buttonStyle="teal" className="text-base px-8 py-3.5" />
+                <HealthEngineWidget mode="lightbox" buttonText="Book with Dr." buttonStyle="teal" className="text-base px-8 py-3.5" />
               </div>
             </div>
           </div>
@@ -82,7 +80,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
 
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-3 gap-10">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
               {/* Main bio */}
               <div className="lg:col-span-2 space-y-8">
                 <AnimatedSection>
@@ -146,7 +144,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
                       })}
                     </div>
                     <div className="mt-4">
-                      <HotDocWidget mode="lightbox" buttonText="Book Now" buttonStyle="teal" className="w-full justify-center text-sm py-3" />
+                      <HealthEngineWidget mode="lightbox" buttonText="Book Now" buttonStyle="teal" className="w-full justify-center text-sm py-3" />
                     </div>
                   </div>
                 </AnimatedSection>
@@ -156,8 +154,6 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

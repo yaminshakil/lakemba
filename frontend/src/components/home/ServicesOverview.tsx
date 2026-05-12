@@ -29,12 +29,13 @@ export default function ServicesOverview() {
   const services = (data && data.length > 0 ? data.slice(0, 6) : DEFAULT_SERVICES)
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-hero-gradient relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
           badge="Our Services"
           title="Comprehensive Care for Your Whole Family"
           subtitle="From preventive care to specialist referrals, we provide a full spectrum of medical services tailored to meet the diverse needs of our community."
+          light
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -53,7 +54,7 @@ export default function ServicesOverview() {
                       </h3>
                       <p className="text-gray-500 text-sm leading-relaxed mb-5">{service.description}</p>
                       <Link href={`/services#${service.slug}`}
-                        className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-sm hover:gap-2.5 transition-all duration-200 group-hover:text-teal-600">
+                        className="inline-flex items-center gap-1.5 text-primary-700 font-semibold text-sm hover:gap-2.5 transition-all duration-200 group-hover:text-[#6BBE44]">
                         Learn more <ArrowRight className="w-4 h-4" />
                       </Link>
                     </motion.div>
@@ -64,7 +65,7 @@ export default function ServicesOverview() {
         </div>
 
         <AnimatedSection className="text-center">
-          <Link href="/services" className="btn-outline">
+          <Link href="/services" className="btn-white">
             View All Services <ArrowRight className="w-4 h-4" />
           </Link>
         </AnimatedSection>

@@ -1,22 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --primary: #1E3A5F;
-  --primary-dark: #0F2C59;
-  --teal: #0D9488;
-  --light-blue: #EBF4FF;
+  --primary: #1B72B5;
+  --primary-dark: #0D3858;
+  --teal: #6BBE44;
+  --light-blue: #EBF4FC;
   --soft-bg: #F8FAFC;
 }
 
 * { box-sizing: border-box; }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), Georgia, serif;
+}
+
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   background-color: #F8FAFC;
   color: #1E293B;
   -webkit-font-smoothing: antialiased;
@@ -50,7 +53,7 @@ body {
     @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
   }
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-primary-900 leading-tight;
+    @apply text-3xl md:text-4xl font-bold text-primary-900 leading-tight font-heading;
   }
   .section-subtitle {
     @apply text-base md:text-lg text-slate-500 max-w-2xl;
@@ -91,7 +94,17 @@ body {
 
 /* Swiper overrides */
 .swiper-pagination-bullet { background: #94A3B8; opacity: 1; }
-.swiper-pagination-bullet-active { background: #1E3A5F; }
+.swiper-pagination-bullet-active { background: #1B72B5; }
+
+/* Dialog animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
 
 /* Skeleton animation */
 @keyframes shimmer {

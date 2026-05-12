@@ -1,21 +1,27 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Pencil, Trash2, X, Check } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useApi } from '@/hooks/useApi'
-import { getServices, adminCreateService, adminUpdateService, adminDeleteService } from '@/lib/api'
+import { getServices, adminCreateService, adminUpdateService, adminDeleteService, bustCache } from '@/lib/api'
 import type { Service } from '@/types'
 
 const EMPTY = { title: '', description: '', full_description: '', icon: 'Stethoscope', is_featured: false, order: 0 }
 
 export default function AdminServicesPage() {
   const { data, loading, refetch } = useApi(() => getServices())
-  const services = data || []
-  const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState<Service | null>(null)
-  const [form, setForm] = useState({ ...EMPTY })
-  const [saving, setSaving] = useState(false)
-  const [deleting, setDeleting] = useState<number | null>(null)
+
+  // Local mirror of the list — updated immediately on every mutation
+  const [services, setServices] = useState<Service[]>([])
+  useEffect(() => { if (data) setServices(data) }, [data])
+
+  const [showForm, setShowForm]   = useState(false)
+  const [editing, setEditing]     = useState<Service | null>(null)
+  const [form, setForm]           = useState({ ...EMPTY })
+  const [saving, setSaving]       = useState(false)
+  const [deleting, setDeleting]   = useState<number | null>(null)
+  const [confirmDel, setConfirmDel] = useState<{ id: number; title: string } | null>(null)
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [field]: e.target.value }))
@@ -35,24 +41,45 @@ export default function AdminServicesPage() {
       const fd = new FormData()
       Object.entries(form).forEach(([k, v]) => fd.append(k, String(v)))
       fd.set('is_featured', form.is_featured ? '1' : '0')
-      if (editing) await adminUpdateService(editing.id, fd)
-      else await adminCreateService(fd)
-      refetch(); setShowForm(false)
-    } catch { alert('Failed to save service.') }
-    finally { setSaving(false) }
+
+      if (editing) {
+        await adminUpdateService(editing.id, fd)
+        // Immediately reflect the change in the list
+        setServices(prev => prev.map(s =>
+          s.id === editing.id
+            ? { ...s, title: form.title, description: form.description, full_description: form.full_description, icon: form.icon, is_featured: !!form.is_featured, order: Number(form.order) }
+            : s
+        ))
+        bustCache('/services')
+      } else {
+        await adminCreateService(fd)
+        bustCache('/services')
+        await refetch()       // need the server-assigned ID + slug
+      }
+
+      setShowForm(false)
+    } catch {
+      alert('Failed to save service.')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"?`)) return
-    setDeleting(id)
-    try { await adminDeleteService(id); refetch() }
-    catch { alert('Failed to delete.') }
-    finally { setDeleting(null) }
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDel) return
+    setDeleting(confirmDel.id)
+    try {
+      await adminDeleteService(confirmDel.id)
+      // Immediately remove from the list
+      setServices(prev => prev.filter(s => s.id !== confirmDel.id))
+      bustCache('/services')
+    } catch { /* ignore */ }
+    finally { setDeleting(null); setConfirmDel(null) }
   }
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Services</h2>
           <p className="text-gray-400 text-sm">{services.length} services</p>
@@ -129,7 +156,7 @@ export default function AdminServicesPage() {
                     <button onClick={() => openEdit(s)} className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
                       <Pencil className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={() => handleDelete(s.id, s.title)} disabled={deleting === s.id} className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                    <button onClick={() => setConfirmDel({ id: s.id, title: s.title })} disabled={deleting === s.id} className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -138,6 +165,16 @@ export default function AdminServicesPage() {
             ))
         }
       </div>
+
+      <ConfirmDialog
+        open={!!confirmDel}
+        title="Delete Service"
+        message={`Delete "${confirmDel?.title ?? 'this service'}"? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        loading={deleting !== null}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirmDel(null)}
+      />
     </div>
   )
 }

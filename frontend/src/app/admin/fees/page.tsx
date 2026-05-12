@@ -118,7 +118,7 @@ export default function AdminFeesPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-5">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Fees &amp; Information</h2>
           <p className="text-gray-400 text-sm">Manage all patient-facing fees and information</p>

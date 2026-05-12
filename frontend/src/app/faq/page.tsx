@@ -6,16 +6,14 @@ import { Plus, Minus, Search } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
-import HotDocWidget from '@/components/booking/HotDocWidget'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import { useApi } from '@/hooks/useApi'
 import { getFaqs } from '@/lib/api'
 import type { Faq } from '@/types'
 
 const DEFAULT_FAQS: Faq[] = [
   { id: 1,  question: 'Do you offer bulk billing?',                       answer: 'Yes. Bulk billing is available for eligible Medicare patients including concession card holders, children under 16, and patients over 65. Please call reception to confirm your eligibility.', category: 'Billing', order: 1 },
-  { id: 2,  question: 'How do I book an appointment?',                    answer: 'You can book online 24/7 via HotDoc, call us at (02) 9759 1234 during business hours, or walk in. Same-day appointments are often available for urgent issues.', category: 'Appointments', order: 2 },
+  { id: 2,  question: 'How do I book an appointment?',                    answer: 'You can book online 24/7 via HealthEngine, call us at (02) 9759 1234 during business hours, or walk in. Same-day appointments are often available for urgent issues.', category: 'Appointments', order: 2 },
   { id: 3,  question: 'What should I bring to my first appointment?',     answer: 'Please bring your Medicare card, any concession or healthcare cards, a list of current medications, any referral letters, and previous test results or medical records if available.', category: 'Appointments', order: 3 },
   { id: 4,  question: 'Do you speak languages other than English?',       answer: 'Yes! Our team speaks Arabic, Mandarin, Cantonese, Vietnamese, and French. For other languages, we can arrange an interpreter.', category: 'General', order: 4 },
   { id: 5,  question: 'What happens if I need care after hours?',         answer: 'For non-emergencies after hours, call 13 SICK (13 7425) for a home doctor. For emergencies, call 000 or go to your nearest ED.', category: 'General', order: 5 },
@@ -50,7 +48,7 @@ export default function FAQPage() {
           <div className="absolute inset-0 bg-medical-pattern opacity-20" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <AnimatedSection>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h1>
               <p className="text-white/70 text-lg max-w-xl mx-auto">Quick answers to your most common questions about our practice.</p>
             </AnimatedSection>
           </div>
@@ -100,11 +98,11 @@ export default function FAQPage() {
               )}
             </div>
 
-            <AnimatedSection className="mt-10 card p-8 text-center">
+            <AnimatedSection className="mt-10 card p-5 sm:p-8 text-center">
               <h3 className="font-bold text-primary-900 text-xl mb-2">Still have questions?</h3>
               <p className="text-gray-500 mb-5">We&apos;re happy to help. Contact us or book an appointment to discuss your concerns.</p>
               <div className="flex flex-wrap justify-center gap-3">
-                <HotDocWidget mode="lightbox" buttonText="Book Appointment" />
+                <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" />
                 <a href="tel:+61297591234" className="btn-outline">Call (02) 9759 1234</a>
               </div>
             </AnimatedSection>
@@ -112,8 +110,6 @@ export default function FAQPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

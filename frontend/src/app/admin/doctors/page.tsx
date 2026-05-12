@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { Plus, Pencil, Trash2, Search, Languages } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { DoctorCardSkeleton } from '@/components/ui/SkeletonLoader'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useApi } from '@/hooks/useApi'
-import { getDoctors, adminDeleteDoctor } from '@/lib/api'
+import { getDoctors, adminDeleteDoctor, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 import type { Doctor } from '@/types'
 
@@ -16,20 +17,21 @@ export default function AdminDoctorsPage() {
   const { data, loading, refetch } = useApi(() => getDoctors())
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState<number | null>(null)
+  const [confirm, setConfirm] = useState<{ id: number; name: string } | null>(null)
 
   const doctors = (data || []).filter(d => !search || d.name.toLowerCase().includes(search.toLowerCase()))
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Are you sure you want to delete ${name}?`)) return
-    setDeleting(id)
-    try { await adminDeleteDoctor(id); refetch() }
-    catch { alert('Failed to delete doctor.') }
-    finally { setDeleting(null) }
+  const handleDeleteConfirmed = async () => {
+    if (!confirm) return
+    setDeleting(confirm.id)
+    try { await adminDeleteDoctor(confirm.id); bustCache('/doctors'); refetch() }
+    catch { /* silently handled — could add toast here */ }
+    finally { setDeleting(null); setConfirm(null) }
   }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Doctors</h2>
           <p className="text-gray-400 text-sm">{data?.length || 0} doctors in the system</p>
@@ -76,7 +78,7 @@ export default function AdminDoctorsPage() {
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
                     <button
-                      onClick={() => handleDelete(doc.id, doc.name)}
+                      onClick={() => setConfirm({ id: doc.id, name: doc.name })}
                       disabled={deleting === doc.id}
                       className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
@@ -87,6 +89,15 @@ export default function AdminDoctorsPage() {
             ))
         }
       </div>
+      <ConfirmDialog
+        open={!!confirm}
+        title="Delete Doctor"
+        message={`Are you sure you want to delete ${confirm?.name ?? 'this doctor'}? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        loading={deleting !== null}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirm(null)}
+      />
     </div>
   )
 }

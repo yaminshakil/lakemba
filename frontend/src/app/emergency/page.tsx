@@ -6,8 +6,19 @@ import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export const metadata: Metadata = {
-  title: 'Emergency Information',
-  description: 'Emergency contacts and after-hours care information for Lakemba General Medical Practice patients.',
+  title: 'Emergency & After-Hours Care | Lakemba General Medical Practice',
+  description:
+    'Emergency contacts and after-hours care options for Lakemba GP patients. Includes local hospital details, after-hours GP services, and what to do in a medical emergency.',
+  keywords: [
+    'after hours GP Lakemba', 'emergency doctor Lakemba', 'medical emergency NSW',
+    'after hours medical care Sydney', 'Lakemba hospital nearby',
+  ],
+  alternates: { canonical: 'https://lakembagmp.com.au/emergency' },
+  openGraph: {
+    title: 'Emergency & After-Hours Care | Lakemba GP',
+    description: 'After-hours and emergency care information for Lakemba General Medical Practice patients.',
+    url: 'https://lakembagmp.com.au/emergency',
+  },
 }
 
 export default function EmergencyPage() {
@@ -24,9 +35,9 @@ export default function EmergencyPage() {
                 <AlertTriangle className="w-4 h-4" />
                 Emergency Information
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">In an Emergency?</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">In an Emergency?</h1>
               <p className="text-white/80 text-lg max-w-xl mx-auto">If you are experiencing a life-threatening emergency, call 000 immediately.</p>
-              <a href="tel:000" className="inline-flex items-center gap-2 mt-6 px-8 py-4 bg-white text-red-700 rounded-xl font-bold text-xl hover:bg-red-50 transition-colors shadow-2xl">
+              <a href="tel:000" className="inline-flex items-center gap-2 mt-6 px-5 py-3 sm:px-8 sm:py-4 bg-white text-red-700 rounded-xl font-bold text-xl hover:bg-red-50 transition-colors shadow-2xl">
                 <Phone className="w-6 h-6" /> Call 000 Now
               </a>
             </AnimatedSection>
@@ -61,7 +72,7 @@ export default function EmergencyPage() {
 
             {/* After hours */}
             <AnimatedSection delay={0.1}>
-              <div className="card p-8">
+              <div className="card p-5 sm:p-8">
                 <h2 className="font-bold text-primary-900 text-xl mb-4 flex items-center gap-2">
                   <Clock className="w-5 h-5 text-teal-500" /> After-Hours Care
                 </h2>
@@ -89,7 +100,7 @@ export default function EmergencyPage() {
 
             {/* Nearest hospitals */}
             <AnimatedSection delay={0.2}>
-              <div className="card p-8">
+              <div className="card p-5 sm:p-8">
                 <h2 className="font-bold text-primary-900 text-xl mb-4 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-teal-500" /> Nearest Hospitals
                 </h2>

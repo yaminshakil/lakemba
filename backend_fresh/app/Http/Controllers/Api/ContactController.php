@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactMessageReceived;
+use App\Mail\ContactMessageReply;
+use App\Models\ContactMessage;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,8 +48,18 @@ class ContactController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // In production, send an actual email here:
-        // Mail::to(Setting::get('email_primary'))->send(new ContactFormMail($request->validated()));
+        $contactMessage = ContactMessage::create($validator->validated());
+
+        $notifyEmail = Setting::get('notification_email') ?: Setting::get('email_primary') ?: config('mail.from.address');
+
+        if ($notifyEmail && Setting::get('notifications_enabled', '1') !== '0') {
+            try {
+                $this->applyMailConfig();
+                Mail::to($notifyEmail)->send(new ContactMessageReceived($contactMessage));
+            } catch (\Throwable $e) {
+                Log::error('Contact notification mail failed: ' . $e->getMessage());
+            }
+        }
 
         return response()->json(['message' => 'Your message has been received. We will be in touch soon.']);
     }
@@ -74,5 +88,91 @@ class ContactController extends Controller
         }
 
         return response()->json(['message' => 'Contact details updated successfully.']);
+    }
+
+    // ── Mail config helper ────────────────────────────────────────────────────
+
+    private function applyMailConfig(): void
+    {
+        $map = [
+            'mail_host'         => 'mail.mailers.smtp.host',
+            'mail_port'         => 'mail.mailers.smtp.port',
+            'mail_username'     => 'mail.mailers.smtp.username',
+            'mail_password'     => 'mail.mailers.smtp.password',
+            'mail_encryption'   => 'mail.mailers.smtp.encryption',
+            'mail_from_address' => 'mail.from.address',
+            'mail_from_name'    => 'mail.from.name',
+        ];
+
+        foreach ($map as $settingKey => $configKey) {
+            $value = Setting::get($settingKey);
+            if ($value !== null && $value !== '') {
+                config([$configKey => $value]);
+            }
+        }
+
+        // Use smtp mailer if host is configured
+        if (Setting::get('mail_host')) {
+            config(['mail.default' => 'smtp']);
+        }
+    }
+
+    // ── Admin: messages ───────────────────────────────────────────────────────
+
+    public function adminIndex(Request $request)
+    {
+        $query = ContactMessage::latest();
+
+        if ($request->filter === 'unread') {
+            $query->where('is_read', false);
+        }
+
+        $messages = $query->paginate(20);
+        return response()->json(['data' => $messages]);
+    }
+
+    public function adminShow(ContactMessage $message)
+    {
+        if (!$message->is_read) {
+            $message->update(['is_read' => true]);
+        }
+        return response()->json(['data' => $message]);
+    }
+
+    public function adminMarkRead(ContactMessage $message)
+    {
+        $message->update(['is_read' => true]);
+        return response()->json(['data' => $message]);
+    }
+
+    public function adminDestroy(ContactMessage $message)
+    {
+        $message->delete();
+        return response()->json(['message' => 'Message deleted.']);
+    }
+
+    public function adminUnreadCount()
+    {
+        return response()->json(['data' => ['count' => ContactMessage::where('is_read', false)->count()]]);
+    }
+
+    public function adminReply(Request $request, ContactMessage $message)
+    {
+        $data = $request->validate([
+            'body' => 'required|string|max:5000',
+        ]);
+
+        try {
+            $this->applyMailConfig();
+            Mail::to($message->email)->send(new ContactMessageReply($message, $data['body']));
+        } catch (\Throwable $e) {
+            Log::error('Reply mail failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send reply: ' . $e->getMessage()], 500);
+        }
+
+        // Mark as read when replied
+        $message->update(['is_read' => true]);
+
+        return response()->json(['message' => 'Reply sent successfully.']);
     }
 }

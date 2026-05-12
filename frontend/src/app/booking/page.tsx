@@ -3,14 +3,23 @@ import type { Metadata } from 'next'
 import { Calendar, Phone, Clock, MapPin, Info } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import HotDocWidget from '@/components/booking/HotDocWidget'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
 
 export const metadata: Metadata = {
-  title: 'Book an Appointment',
-  description: 'Book your appointment online with Lakemba General Medical Practice. Same-day appointments available.',
+  title: 'Book an Appointment | Lakemba General Medical Practice',
+  description:
+    'Book a GP appointment online at Lakemba General Medical Practice via HealthEngine. Same-day appointments often available. New patients welcome. Bulk billing for eligible patients.',
+  keywords: [
+    'book GP Lakemba', 'online appointment Lakemba doctor', 'HealthEngine Lakemba',
+    'same day GP appointment Sydney', 'new patient GP Lakemba',
+  ],
+  alternates: { canonical: 'https://lakembagmp.com.au/booking' },
+  openGraph: {
+    title: 'Book a GP Appointment | Lakemba General Medical Practice',
+    description: 'Book online with HealthEngine. Same-day appointments. New patients welcome.',
+    url: 'https://lakembagmp.com.au/booking',
+  },
 }
 
 const TIPS = [
@@ -38,7 +47,7 @@ export default function BookingPage() {
               </div>
               <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Book Your Appointment</h1>
               <p className="text-white/70 text-lg max-w-xl mx-auto">
-                Secure your spot instantly using HotDoc. Simple, fast, and available around the clock.
+                Secure your spot instantly using HealthEngine. Simple, fast, and available around the clock.
               </p>
             </AnimatedSection>
           </div>
@@ -47,22 +56,22 @@ export default function BookingPage() {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid md:grid-cols-3 gap-10">
-              {/* HotDoc iframe - large embed */}
+              {/* HealthEngine booking embed */}
               <div className="md:col-span-2">
                 <AnimatedSection direction="left">
                   <div className="card overflow-hidden">
                     <div className="bg-primary-800 px-6 py-4 flex items-center gap-3">
                       <Calendar className="w-5 h-5 text-teal-300" />
                       <div>
-                        <h2 className="text-white font-bold">Online Booking via HotDoc</h2>
-                        <p className="text-white/60 text-xs">Powered by HotDoc — Australia&apos;s most trusted booking platform</p>
+                        <h2 className="text-white font-bold">Online Booking via HealthEngine</h2>
+                        <p className="text-white/60 text-xs">Powered by HealthEngine — Australia&apos;s most trusted booking platform</p>
                       </div>
                     </div>
                     <div className="p-6 flex flex-col items-center gap-6">
                       <p className="text-gray-600 text-sm text-center max-w-md">
-                        Click the button below to open the HotDoc booking window and select your preferred doctor, date, and time.
+                        Click the button below to open the HealthEngine booking window and select your preferred doctor, date, and time.
                       </p>
-                      <HotDocWidget
+                      <HealthEngineWidget
                         mode="lightbox"
                         buttonText="Open Booking Calendar"
                         buttonStyle="teal"
@@ -133,8 +142,6 @@ export default function BookingPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

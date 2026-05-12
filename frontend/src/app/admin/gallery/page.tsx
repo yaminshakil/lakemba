@@ -3,8 +3,9 @@ import { useState, useRef } from 'react'
 import Image from 'next/image'
 import { Upload, Trash2, ImagePlus, X } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useApi } from '@/hooks/useApi'
-import { getGallery, adminUploadGalleryImage, adminDeleteGalleryImage } from '@/lib/api'
+import { getGallery, adminUploadGalleryImage, adminDeleteGalleryImage, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 
 const CATEGORIES = ['General', 'Clinic', 'Team', 'Events', 'Facilities']
@@ -14,6 +15,7 @@ export default function AdminGalleryPage() {
   const images = data || []
   const [uploading, setUploading] = useState(false)
   const [deleting, setDeleting] = useState<number | null>(null)
+  const [confirmDel, setConfirmDel] = useState<{ id: number; title: string } | null>(null)
   const [previews, setPreviews] = useState<{ file: File; url: string; title: string; category: string }[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -45,17 +47,17 @@ export default function AdminGalleryPage() {
     finally { setUploading(false) }
   }
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this image?')) return
-    setDeleting(id)
-    try { await adminDeleteGalleryImage(id); refetch() }
-    catch { alert('Failed to delete.') }
-    finally { setDeleting(null) }
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDel) return
+    setDeleting(confirmDel.id)
+    try { await adminDeleteGalleryImage(confirmDel.id); bustCache('/gallery'); refetch() }
+    catch { /* silently handled */ }
+    finally { setDeleting(null); setConfirmDel(null) }
   }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Gallery</h2>
           <p className="text-gray-400 text-sm">{images.length} images</p>
@@ -129,7 +131,7 @@ export default function AdminGalleryPage() {
                   <div className="relative group aspect-square rounded-2xl overflow-hidden bg-gray-100">
                     <Image src={getImageUrl(img.image)} alt={img.title} fill className="object-cover" />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                      <button onClick={() => handleDelete(img.id)} disabled={deleting === img.id}
+                      <button onClick={() => setConfirmDel({ id: img.id, title: img.title })} disabled={deleting === img.id}
                         className="w-9 h-9 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600">
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -144,6 +146,15 @@ export default function AdminGalleryPage() {
             </div>
           )
       }
+      <ConfirmDialog
+        open={!!confirmDel}
+        title="Delete Image"
+        message={`Delete "${confirmDel?.title ?? 'this image'}"? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        loading={deleting !== null}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirmDel(null)}
+      />
     </div>
   )
 }

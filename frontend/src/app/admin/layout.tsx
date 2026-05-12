@@ -1,22 +1,28 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminHeader from '@/components/admin/AdminHeader'
 
-function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+function AdminPublicPage({ children }: { children: React.ReactNode }) {
+  return <>{children}</>
+}
+
+function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
-  const isPublicPage = pathname === '/admin/login' || pathname === '/admin/register'
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
-    if (!loading && !isAuthenticated && !isPublicPage) router.replace('/admin/login')
-  }, [isAuthenticated, loading, router, isPublicPage])
+    if (!loading && !isAuthenticated) router.replace('/admin/login')
+  }, [isAuthenticated, loading, router])
 
-  // Render login/register without sidebar or auth guard
-  if (isPublicPage) return <>{children}</>
+  // Close sidebar whenever the route changes (mobile navigation)
+  useEffect(() => {
+    setSidebarOpen(false)
+  }, [pathname])
 
   if (loading) {
     return (
@@ -30,15 +36,28 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex bg-gray-50">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex-1 flex flex-col min-w-0">
-        <AdminHeader />
-        <main className="flex-1 p-6 lg:p-8 overflow-auto">
+        <AdminHeader onMenuOpen={() => setSidebarOpen(true)} />
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
           {children}
         </main>
       </div>
     </div>
   )
+}
+
+function AdminLayoutInner({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const isPublicPage = [
+    '/admin/login',
+    '/admin/register',
+    '/admin/forgot-password',
+    '/admin/reset-password',
+  ].some(p => pathname === p || pathname.startsWith(p + '?'))
+
+  if (isPublicPage) return <AdminPublicPage>{children}</AdminPublicPage>
+  return <AdminProtectedLayout>{children}</AdminProtectedLayout>
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

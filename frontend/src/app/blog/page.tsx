@@ -10,8 +10,6 @@ import Footer from '@/components/layout/Footer'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { BlogCardSkeleton } from '@/components/ui/SkeletonLoader'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
 import { useApi } from '@/hooks/useApi'
 import { getBlogPosts } from '@/lib/api'
 import { formatDate, getImageUrl, truncate } from '@/lib/utils'
@@ -47,7 +45,7 @@ export default function BlogPage() {
           <div className="absolute inset-0 bg-medical-pattern opacity-20" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <AnimatedSection>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Health Blog & News</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Health Blog & News</h1>
               <p className="text-white/70 text-lg max-w-xl mx-auto">Expert advice, health tips, and clinic updates from our experienced team of GPs.</p>
             </AnimatedSection>
           </div>
@@ -105,8 +103,6 @@ export default function BlogPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

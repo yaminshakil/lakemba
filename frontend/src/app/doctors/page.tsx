@@ -9,10 +9,8 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import { DoctorCardSkeleton } from '@/components/ui/SkeletonLoader'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
 import { useApi } from '@/hooks/useApi'
 import { getDoctors } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
@@ -50,7 +48,7 @@ export default function DoctorsPage() {
           <div className="absolute inset-0 bg-medical-pattern opacity-20" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <AnimatedSection>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Meet Our Doctors</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Meet Our Doctors</h1>
               <p className="text-white/70 text-lg max-w-xl mx-auto">
                 Our experienced, multilingual team of GPs is dedicated to providing outstanding care for every patient.
               </p>
@@ -139,7 +137,7 @@ export default function DoctorsPage() {
                         </div>
 
                         <div className="mt-auto flex flex-col gap-2">
-                          <HotDocWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5" />
+                          <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5" />
                           <Link href={`/doctors/${doc.slug || doc.id}`}
                             className="text-center text-primary-700 text-sm font-medium hover:text-teal-600 transition-colors py-1.5">
                             View Full Profile →
@@ -160,8 +158,6 @@ export default function DoctorsPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

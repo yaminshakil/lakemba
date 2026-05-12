@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // CORS: allow localhost:3000 and production domain
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+
+        $middleware->alias([
+            'is_admin' => \App\Http\Middleware\IsAdmin::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

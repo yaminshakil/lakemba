@@ -3,9 +3,7 @@ import { CheckCircle2, CreditCard, Clock, Phone, Shield, AlertCircle, ChevronRig
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import { useApi } from '@/hooks/useApi'
 import { getFeesSettings } from '@/lib/api'
 
@@ -49,7 +47,7 @@ export default function FeesInformationPage() {
                 <DollarSign className="w-4 h-4 text-teal-400" />
                 <span className="text-white/90 text-sm font-medium">Transparent Pricing</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Fees &amp; Information</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Fees &amp; Information</h1>
               <p className="text-white/70 text-lg max-w-2xl mx-auto">
                 We believe in transparent, fair pricing. Below you'll find all the information you need about our consultation fees, billing options, and practice policies.
               </p>
@@ -69,7 +67,7 @@ export default function FeesInformationPage() {
                 {/* Bulk Billing Banner */}
                 {fees.bulk_billing_available && (
                   <AnimatedSection>
-                    <div className="rounded-2xl bg-gradient-to-r from-teal-500 to-teal-600 p-8 text-white shadow-lg">
+                    <div className="rounded-2xl bg-gradient-to-r from-teal-500 to-teal-600 p-5 sm:p-8 text-white shadow-lg">
                       <div className="flex flex-col md:flex-row md:items-center gap-6">
                         <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                           <Shield className="w-8 h-8 text-white" />
@@ -78,7 +76,7 @@ export default function FeesInformationPage() {
                           <h2 className="text-2xl font-bold mb-2">Bulk Billing Available</h2>
                           <p className="text-teal-100 leading-relaxed">{fees.bulk_billing_details}</p>
                         </div>
-                        <HotDocWidget mode="lightbox" buttonText="Book Now" buttonStyle="white" className="shrink-0 px-7 py-3.5" />
+                        <HealthEngineWidget mode="lightbox" buttonText="Book Now" buttonStyle="white" className="shrink-0 px-7 py-3.5" />
                       </div>
                     </div>
                   </AnimatedSection>
@@ -257,7 +255,7 @@ export default function FeesInformationPage() {
                 <h3 className="font-bold text-primary-900 text-xl mb-2">Have a question about fees?</h3>
                 <p className="text-gray-500 mb-6">Our friendly reception team is happy to help with any billing or fee enquiries.</p>
                 <div className="flex flex-wrap justify-center gap-3">
-                  <HotDocWidget mode="lightbox" buttonText="Book an Appointment" />
+                  <HealthEngineWidget mode="lightbox" buttonText="Book an Appointment" />
                   <a href="tel:+61297591234" className="btn-outline inline-flex items-center gap-2">
                     <Phone className="w-4 h-4" /> Call Us
                   </a>
@@ -269,8 +267,6 @@ export default function FeesInformationPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

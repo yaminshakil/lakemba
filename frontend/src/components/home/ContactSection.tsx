@@ -33,7 +33,7 @@ export default function ContactSection() {
           subtitle="We&apos;re always happy to hear from you. Reach out with any questions or to find out more about our services."
         />
 
-        <div className="grid lg:grid-cols-2 gap-10">
+        <div className="grid md:grid-cols-2 gap-10">
           {/* Contact info + map */}
           <AnimatedSection direction="left">
             <div className="space-y-6">

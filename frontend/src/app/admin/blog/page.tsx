@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { Plus, Pencil, Trash2, Search, Eye, EyeOff, Calendar } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { BlogCardSkeleton } from '@/components/ui/SkeletonLoader'
+import ConfirmDialog from '@/components/ui/ConfirmDialog'
 import { useApi } from '@/hooks/useApi'
-import { getBlogPosts, adminDeleteBlogPost } from '@/lib/api'
+import { getBlogPosts, adminDeleteBlogPost, bustCache } from '@/lib/api'
 import { formatDate, getImageUrl, truncate } from '@/lib/utils'
 
 export default function AdminBlogPage() {
@@ -14,20 +15,21 @@ export default function AdminBlogPage() {
   const posts = data || []
   const [search, setSearch] = useState('')
   const [deleting, setDeleting] = useState<number | null>(null)
+  const [confirmDel, setConfirmDel] = useState<{ id: number; title: string } | null>(null)
 
   const filtered = posts.filter(p => !search || p.title.toLowerCase().includes(search.toLowerCase()))
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete "${title}"?`)) return
-    setDeleting(id)
-    try { await adminDeleteBlogPost(id); refetch() }
-    catch { alert('Failed to delete post.') }
-    finally { setDeleting(null) }
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDel) return
+    setDeleting(confirmDel.id)
+    try { await adminDeleteBlogPost(confirmDel.id); bustCache('/blog'); refetch() }
+    catch { /* silently handled */ }
+    finally { setDeleting(null); setConfirmDel(null) }
   }
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <AnimatedSection className="flex items-center justify-between">
+      <AnimatedSection className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold text-primary-900">Blog Posts</h2>
           <p className="text-gray-400 text-sm">{posts.length} posts total</p>
@@ -73,7 +75,7 @@ export default function AdminBlogPage() {
                     <Link href={`/admin/blog/${post.id}/edit`} className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white transition-colors">
                       <Pencil className="w-3.5 h-3.5" />
                     </Link>
-                    <button onClick={() => handleDelete(post.id, post.title)} disabled={deleting === post.id}
+                    <button onClick={() => setConfirmDel({ id: post.id, title: post.title })} disabled={deleting === post.id}
                       className="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -83,6 +85,15 @@ export default function AdminBlogPage() {
             ))
         }
       </div>
+      <ConfirmDialog
+        open={!!confirmDel}
+        title="Delete Blog Post"
+        message={`Delete "${confirmDel?.title ?? 'this post'}"? This action cannot be undone.`}
+        confirmLabel="Yes, Delete"
+        loading={deleting !== null}
+        onConfirm={handleDeleteConfirmed}
+        onCancel={() => setConfirmDel(null)}
+      />
     </div>
   )
 }

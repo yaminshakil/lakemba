@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Upload, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getDoctor, adminUpdateDoctor } from '@/lib/api'
+import { getDoctor, adminUpdateDoctor, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -66,6 +66,7 @@ export default function EditDoctorPage() {
       data.set('available_days', JSON.stringify(form.available_days))
       data.set('is_featured', form.is_featured ? '1' : '0')
       await adminUpdateDoctor(Number(id), data)
+      bustCache('/doctors')
       router.push('/admin/doctors')
     } catch { alert('Failed to save doctor.') }
     finally { setSaving(false) }

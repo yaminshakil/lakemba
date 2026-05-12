@@ -8,7 +8,9 @@ interface AuthContextType {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  updateUser: (userData: User) => void
   isAuthenticated: boolean
+  isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -20,7 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem('admin_user')
     if (stored) {
-      try { setUser(JSON.parse(stored)) } catch { /* ignore */ }
+      try {
+        const userData = JSON.parse(stored)
+        if (!userData.role) userData.role = 'admin'
+        setUser(userData)
+      } catch { /* ignore */ }
     }
     setLoading(false)
   }, [])
@@ -40,8 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null)
   }
 
+  const updateUser = (userData: User) => {
+    localStorage.setItem('admin_user', JSON.stringify(userData))
+    setUser(userData)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, isAuthenticated: !!user, isAdmin: !user?.role || user.role === 'admin' }}>
       {children}
     </AuthContext.Provider>
   )

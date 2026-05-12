@@ -25,7 +25,7 @@ export default function SectionTitle({ badge, title, subtitle, align = 'center',
         {title}
       </h2>
       {subtitle && (
-        <p className={cn('mt-4 text-base md:text-lg max-w-2xl leading-relaxed', align === 'center' && 'mx-auto', light ? 'text-white/75' : 'text-slate-500')}>
+        <p className={cn('mt-4 text-base md:text-lg max-w-2xl leading-relaxed', align === 'center' && 'mx-auto', light ? 'text-white' : 'text-slate-600')}>
           {subtitle}
         </p>
       )}

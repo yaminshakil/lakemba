@@ -7,13 +7,19 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 
 export const metadata: Metadata = {
-  title: 'About Us',
-  description: 'Learn about Lakemba General Medical Practice — our history, values, and commitment to your health.',
+  title: 'About Us | Lakemba General Medical Practice',
+  description:
+    'Learn about Lakemba General Medical Practice — our experienced team of GPs, our values, and our commitment to compassionate, patient-centred care for the Lakemba community.',
+  keywords: ['about Lakemba GP', 'Lakemba medical practice history', 'GP team Lakemba', 'patient centred care NSW'],
+  alternates: { canonical: 'https://lakembagmp.com.au/about' },
+  openGraph: {
+    title: 'About Lakemba General Medical Practice',
+    description: 'Meet our team of experienced, compassionate GPs serving the Lakemba community.',
+    url: 'https://lakembagmp.com.au/about',
+  },
 }
 
 const VALUES = [
@@ -38,7 +44,7 @@ export default function AboutPage() {
               <span className="inline-block px-4 py-1.5 rounded-full bg-white/15 text-white text-xs font-bold uppercase tracking-widest mb-4">
                 About Our Practice
               </span>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
                 Caring for Lakemba Since 2009
               </h1>
               <p className="text-white/70 text-lg max-w-2xl mx-auto">
@@ -92,7 +98,7 @@ export default function AboutPage() {
                   ))}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  <HotDocWidget mode="lightbox" buttonText="Book an Appointment" />
+                  <HealthEngineWidget mode="lightbox" buttonText="Book an Appointment" />
                   <Link href="/doctors" className="btn-outline">Meet Our Team <ArrowRight className="w-4 h-4" /></Link>
                 </div>
               </AnimatedSection>
@@ -124,8 +130,6 @@ export default function AboutPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }

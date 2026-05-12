@@ -1,36 +1,39 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Calendar, ExternalLink } from 'lucide-react'
+import { getSettings } from '@/lib/api'
 
 interface Props {
-  practiceId?: string
-  doctorId?: string
   mode?: 'button' | 'iframe' | 'lightbox'
   className?: string
   buttonText?: string
   buttonStyle?: 'primary' | 'teal' | 'white'
 }
 
-const HOTDOC_URL = 'https://www.hotdoc.com.au/medical-centres/lakemba-2195/lakemba-general-medical-practice/'
+const FALLBACK_URL = 'https://healthengine.com.au/book-appointment/lakemba-general-medical-practice'
 
-export default function HotDocWidget({
+export default function HealthEngineWidget({
   mode = 'lightbox',
   className = '',
   buttonText = 'Book Appointment Online',
   buttonStyle = 'teal',
 }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null)
+  const [bookingUrl, setBookingUrl] = useState<string>(FALLBACK_URL)
 
   useEffect(() => {
-    if (mode !== 'iframe') return
-    // HotDoc script injection for embedded booking
-    const script = document.createElement('script')
-    script.src = 'https://www.hotdoc.com.au/widget/embed.js'
-    script.async = true
-    script.setAttribute('data-practice', process.env.NEXT_PUBLIC_HOTDOC_PRACTICE_ID || '')
-    if (containerRef.current) containerRef.current.appendChild(script)
-    return () => { if (script.parentNode) script.parentNode.removeChild(script) }
-  }, [mode])
+    const cached = localStorage.getItem('healthengine_url')
+    if (cached) setBookingUrl(cached)
+
+    getSettings()
+      .then(res => {
+        const settings = res.data?.data as Record<string, string> | undefined
+        if (settings?.healthengine_url) {
+          setBookingUrl(settings.healthengine_url)
+          localStorage.setItem('healthengine_url', settings.healthengine_url)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const btnClasses: Record<string, string> = {
     primary: 'btn-primary text-base px-8 py-4',
@@ -40,9 +43,9 @@ export default function HotDocWidget({
 
   if (mode === 'iframe') {
     return (
-      <div ref={containerRef} className={`w-full min-h-96 rounded-2xl overflow-hidden ${className}`}>
+      <div className={`w-full min-h-96 rounded-2xl overflow-hidden ${className}`}>
         <iframe
-          src={HOTDOC_URL}
+          src={bookingUrl}
           className="w-full h-full min-h-96 border-0 rounded-2xl"
           title="Book an appointment"
           allow="geolocation"
@@ -53,7 +56,7 @@ export default function HotDocWidget({
 
   return (
     <a
-      href={HOTDOC_URL}
+      href={bookingUrl}
       target="_blank"
       rel="noopener noreferrer"
       className={`${btnClasses[buttonStyle]} inline-flex items-center gap-2 ${className}`}

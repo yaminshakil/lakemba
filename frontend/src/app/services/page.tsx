@@ -5,13 +5,23 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import HotDocWidget from '@/components/booking/HotDocWidget'
-import StickyBooking from '@/components/floating/StickyBooking'
-import EmergencyContact from '@/components/floating/EmergencyContact'
+import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 
 export const metadata: Metadata = {
-  title: 'Our Services',
-  description: 'Comprehensive medical services at Lakemba General Medical Practice — from general practice to specialist referrals.',
+  title: 'Medical Services | Lakemba General Medical Practice',
+  description:
+    'Comprehensive GP services in Lakemba NSW — general practice, mental health care plans, women\'s health, chronic disease management, childhood immunisations, and specialist referrals. Bulk billing available.',
+  keywords: [
+    'GP services Lakemba', 'mental health care plan Lakemba', "women's health Lakemba",
+    'chronic disease management NSW', 'immunisation Lakemba', 'bulk billing GP services',
+    'health assessment Lakemba', 'diabetes management Sydney',
+  ],
+  alternates: { canonical: 'https://lakembagmp.com.au/services' },
+  openGraph: {
+    title: 'Medical Services | Lakemba General Medical Practice',
+    description: 'Full range of GP services in Lakemba — bulk billing, mental health, women\'s health & more.',
+    url: 'https://lakembagmp.com.au/services',
+  },
 }
 
 const SERVICES = [
@@ -49,7 +59,7 @@ export default function ServicesPage() {
           <div className="absolute inset-0 bg-medical-pattern opacity-20" />
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <AnimatedSection>
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Our Medical Services</h1>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">Our Medical Services</h1>
               <p className="text-white/70 text-lg max-w-xl mx-auto">
                 Comprehensive healthcare for every stage of life. From routine check-ups to complex care management.
               </p>
@@ -78,7 +88,7 @@ export default function ServicesPage() {
                           </li>
                         ))}
                       </ul>
-                      <HotDocWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5 mt-auto" />
+                      <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5 mt-auto" />
                     </div>
                   </AnimatedSection>
                 )
@@ -91,13 +101,13 @@ export default function ServicesPage() {
         <section className="pb-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <AnimatedSection>
-              <div className="bg-teal-gradient rounded-3xl p-10 text-center text-white relative overflow-hidden">
+              <div className="bg-teal-gradient rounded-3xl p-6 sm:p-10 text-center text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-medical-pattern opacity-15" />
                 <div className="relative">
                   <h2 className="text-3xl font-bold mb-3">Need a Service Not Listed Here?</h2>
                   <p className="text-white/80 mb-6 max-w-lg mx-auto">We offer a wide range of healthcare services. Contact us to find out how we can help you.</p>
                   <div className="flex flex-wrap justify-center gap-4">
-                    <HotDocWidget mode="lightbox" buttonText="Book a Consultation" buttonStyle="white" />
+                    <HealthEngineWidget mode="lightbox" buttonText="Book a Consultation" buttonStyle="white" />
                     <a href="tel:+61297591234" className="inline-flex items-center gap-2 px-6 py-3 bg-white/15 text-white rounded-xl font-semibold border border-white/25 hover:bg-white/25 transition-all">
                       Call Us
                     </a>
@@ -109,8 +119,6 @@ export default function ServicesPage() {
         </section>
       </main>
       <Footer />
-      <StickyBooking />
-      <EmergencyContact />
     </>
   )
 }
