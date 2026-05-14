@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
-import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, Microscope, Syringe, Scale, Eye, ArrowRight } from 'lucide-react'
+import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, Microscope, Syringe, Eye, Clipboard, Users, Thermometer } from 'lucide-react'
+import type { ElementType } from 'react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 
@@ -24,33 +24,75 @@ export const metadata: Metadata = {
   },
 }
 
-const SERVICES = [
-  { id: 'general',        icon: Stethoscope, title: 'General Practice',             color: 'blue',   items: ['Acute illness management', 'Health assessments', 'Chronic disease management', 'Referrals to specialists', 'Telehealth consultations', 'Pre-employment medicals'] },
-  { id: 'preventive',     icon: Shield,      title: 'Preventive Health',             color: 'teal',   items: ['Health risk assessments', 'Cancer screenings', 'Cardiovascular checks', 'Immunisations & vaccines', 'Lifestyle counselling', 'Weight management'] },
-  { id: 'mental-health',  icon: Brain,       title: 'Mental Health Care',            color: 'purple', items: ['Mental Health Care Plans (MHCP)', 'Anxiety & depression', 'Stress management', 'GP Management Plans', 'Referrals to psychologists', 'Bulk billing for MHCP eligible patients'] },
-  { id: 'chronic',        icon: Activity,    title: 'Chronic Disease Management',   color: 'rose',   items: ['Diabetes management', 'Hypertension control', 'Asthma care plans', 'Heart disease management', 'Arthritis', 'COPD management'] },
-  { id: 'womens-health',  icon: Heart,       title: "Women's Health",               color: 'pink',   items: ['Cervical screening (Pap smears)', 'Contraception advice', 'Pregnancy care', 'Menopause management', 'Breast health', 'Reproductive health'] },
-  { id: 'childrens',      icon: Baby,        title: "Children's Health",            color: 'orange', items: ['Childhood immunisations', 'Growth & developmental checks', 'School & daycare assessments', 'Asthma in children', 'Behavioural concerns', 'Allergy testing referrals'] },
-  { id: 'travel',         icon: Zap,         title: 'Travel Medicine',              color: 'yellow', items: ['Pre-travel health advice', 'Travel vaccinations', 'Malaria prophylaxis', 'Traveller\'s diarrhoea', 'Altitude sickness prevention', 'International health certificates'] },
-  { id: 'skin',           icon: Eye,         title: 'Skin Health',                  color: 'green',  items: ['Skin cancer checks', 'Mole mapping referrals', 'Acne management', 'Eczema & psoriasis', 'Minor skin procedures', 'Dermatology referrals'] },
-  { id: 'procedures',     icon: Syringe,     title: 'Minor Procedures',             color: 'indigo', items: ['Wound care & suturing', 'Joint injections', 'Skin lesion removal', 'Ear syringing', 'Ingrown toenails', 'Cryotherapy'] },
-  { id: 'pathology',      icon: Microscope,  title: 'Pathology & Investigations',   color: 'slate',  items: ['Blood tests & referrals', 'ECG', 'Spirometry', 'Urine testing', 'Imaging referrals', 'Sleep study referrals'] },
-]
-
-const COLOR_MAP: Record<string, string> = {
-  blue: 'bg-blue-50 text-blue-700 group-hover:bg-blue-600',
-  teal: 'bg-teal-50 text-teal-700 group-hover:bg-teal-600',
-  purple: 'bg-purple-50 text-purple-700 group-hover:bg-purple-600',
-  rose: 'bg-rose-50 text-rose-700 group-hover:bg-rose-600',
-  pink: 'bg-pink-50 text-pink-700 group-hover:bg-pink-600',
-  orange: 'bg-orange-50 text-orange-700 group-hover:bg-orange-600',
-  yellow: 'bg-amber-50 text-amber-700 group-hover:bg-amber-600',
-  green: 'bg-green-50 text-green-700 group-hover:bg-green-600',
-  indigo: 'bg-indigo-50 text-indigo-700 group-hover:bg-indigo-600',
-  slate: 'bg-slate-50 text-slate-700 group-hover:bg-slate-600',
+const ICON_MAP: Record<string, ElementType> = {
+  heart: Heart, brain: Brain, baby: Baby, stethoscope: Stethoscope,
+  activity: Activity, shield: Shield, pill: Pill, zap: Zap,
+  eye: Eye, syringe: Syringe, clipboard: Clipboard, users: Users,
+  microscope: Microscope, thermometer: Thermometer,
 }
 
-export default function ServicesPage() {
+const COLORS = ['blue', 'teal', 'purple', 'rose', 'pink', 'orange', 'yellow', 'green', 'indigo', 'slate']
+
+const COLOR_MAP: Record<string, string> = {
+  blue:   'bg-blue-50 text-blue-700 group-hover:bg-blue-600',
+  teal:   'bg-teal-50 text-teal-700 group-hover:bg-teal-600',
+  purple: 'bg-purple-50 text-purple-700 group-hover:bg-purple-600',
+  rose:   'bg-rose-50 text-rose-700 group-hover:bg-rose-600',
+  pink:   'bg-pink-50 text-pink-700 group-hover:bg-pink-600',
+  orange: 'bg-orange-50 text-orange-700 group-hover:bg-orange-600',
+  yellow: 'bg-amber-50 text-amber-700 group-hover:bg-amber-600',
+  green:  'bg-green-50 text-green-700 group-hover:bg-green-600',
+  indigo: 'bg-indigo-50 text-indigo-700 group-hover:bg-indigo-600',
+  slate:  'bg-slate-50 text-slate-700 group-hover:bg-slate-600',
+}
+
+// Shown when API is unreachable or returns nothing
+const FALLBACK_SERVICES = [
+  { id: 'general',       icon: 'stethoscope', title: 'General Practice',           slug: 'general',       description: '', full_description: 'Acute illness management\nHealth assessments\nChronic disease management\nReferrals to specialists\nTelehealth consultations\nPre-employment medicals' },
+  { id: 'preventive',   icon: 'shield',      title: 'Preventive Health',           slug: 'preventive',    description: '', full_description: 'Health risk assessments\nCancer screenings\nCardiovascular checks\nImmunisations & vaccines\nLifestyle counselling\nWeight management' },
+  { id: 'mental-health',icon: 'brain',       title: 'Mental Health Care',          slug: 'mental-health', description: '', full_description: 'Mental Health Care Plans (MHCP)\nAnxiety & depression\nStress management\nGP Management Plans\nReferrals to psychologists\nBulk billing for MHCP eligible patients' },
+  { id: 'chronic',      icon: 'activity',    title: 'Chronic Disease Management',  slug: 'chronic',       description: '', full_description: 'Diabetes management\nHypertension control\nAsthma care plans\nHeart disease management\nArthritis\nCOPD management' },
+  { id: 'womens-health',icon: 'heart',       title: "Women's Health",              slug: 'womens-health', description: '', full_description: 'Cervical screening (Pap smears)\nContraception advice\nPregnancy care\nMenopause management\nBreast health\nReproductive health' },
+  { id: 'childrens',    icon: 'baby',        title: "Children's Health",           slug: 'childrens',     description: '', full_description: 'Childhood immunisations\nGrowth & developmental checks\nSchool & daycare assessments\nAsthma in children\nBehavioural concerns\nAllergy testing referrals' },
+  { id: 'travel',       icon: 'zap',         title: 'Travel Medicine',             slug: 'travel',        description: '', full_description: "Pre-travel health advice\nTravel vaccinations\nMalaria prophylaxis\nTraveller's diarrhoea\nAltitude sickness prevention\nInternational health certificates" },
+  { id: 'skin',         icon: 'eye',         title: 'Skin Health',                 slug: 'skin',          description: '', full_description: 'Skin cancer checks\nMole mapping referrals\nAcne management\nEczema & psoriasis\nMinor skin procedures\nDermatology referrals' },
+  { id: 'procedures',   icon: 'syringe',     title: 'Minor Procedures',            slug: 'procedures',    description: '', full_description: 'Wound care & suturing\nJoint injections\nSkin lesion removal\nEar syringing\nIngrown toenails\nCryotherapy' },
+  { id: 'pathology',    icon: 'microscope',  title: 'Pathology & Investigations',  slug: 'pathology',     description: '', full_description: 'Blood tests & referrals\nECG\nSpirometry\nUrine testing\nImaging referrals\nSleep study referrals' },
+]
+
+interface ApiService {
+  id: number
+  title: string
+  description: string
+  full_description?: string
+  icon: string
+  slug: string
+  is_featured: boolean
+  order: number
+}
+
+async function fetchServices(): Promise<ApiService[] | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { cache: 'no-store' })
+    if (!res.ok) return null
+    const json = await res.json()
+    const rows: ApiService[] = json.data ?? []
+    return rows.length > 0 ? rows.sort((a, b) => a.order - b.order) : null
+  } catch {
+    return null
+  }
+}
+
+function parseItems(service: { description: string; full_description?: string }): string[] {
+  const raw = service.full_description?.trim() || service.description?.trim() || ''
+  if (!raw) return []
+  return raw.split('\n').map(l => l.replace(/^[-*•]\s*/, '').trim()).filter(Boolean)
+}
+
+export default async function ServicesPage() {
+  const apiServices = await fetchServices()
+  const services = apiServices ?? FALLBACK_SERVICES
+
   return (
     <>
       <Header />
@@ -70,24 +112,30 @@ export default function ServicesPage() {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {SERVICES.map((service, i) => {
-                const Icon = service.icon
-                const colors = COLOR_MAP[service.color] || COLOR_MAP.blue
+              {services.map((service, i) => {
+                const Icon = ICON_MAP[service.icon] ?? Stethoscope
+                const colorKey = COLORS[i % COLORS.length]
+                const colors = COLOR_MAP[colorKey]
+                const items = parseItems(service)
                 return (
-                  <AnimatedSection key={service.id} delay={i * 0.06} id={service.id}>
+                  <AnimatedSection key={service.id} delay={i * 0.06} id={service.slug}>
                     <div className="card p-7 group hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 transition-colors duration-300 ${colors}`}>
                         <Icon className="w-6 h-6 transition-colors duration-300 group-hover:text-white" />
                       </div>
                       <h3 className="font-bold text-primary-900 text-lg mb-4">{service.title}</h3>
-                      <ul className="space-y-2 mb-6 flex-1">
-                        {service.items.map(item => (
-                          <li key={item} className="flex items-center gap-2 text-gray-500 text-sm">
-                            <div className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                      {items.length > 0 ? (
+                        <ul className="space-y-2 mb-6 flex-1">
+                          {items.map(item => (
+                            <li key={item} className="flex items-center gap-2 text-gray-500 text-sm">
+                              <div className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">{service.description}</p>
+                      )}
                       <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5 mt-auto" />
                     </div>
                   </AnimatedSection>

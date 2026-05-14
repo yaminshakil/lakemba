@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, ArrowRight } from 'lucide-react'
+import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, Eye, Syringe, Clipboard, Users, Microscope, Thermometer, ArrowRight } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { useApi } from '@/hooks/useApi'
@@ -12,6 +12,8 @@ import type { Service } from '@/types'
 const ICON_MAP: Record<string, React.ElementType> = {
   heart: Heart, brain: Brain, baby: Baby, stethoscope: Stethoscope,
   activity: Activity, shield: Shield, pill: Pill, zap: Zap,
+  eye: Eye, syringe: Syringe, clipboard: Clipboard, users: Users,
+  microscope: Microscope, thermometer: Thermometer,
 }
 
 const DEFAULT_SERVICES = [
@@ -26,7 +28,11 @@ const DEFAULT_SERVICES = [
 export default function ServicesOverview() {
   const { data, loading } = useApi(() => getServices())
 
-  const services = (data && data.length > 0 ? data.slice(0, 6) : DEFAULT_SERVICES)
+  const services = (() => {
+    if (!data || data.length === 0) return DEFAULT_SERVICES
+    const featured = data.filter(s => s.is_featured)
+    return (featured.length > 0 ? featured : data).slice(0, 6)
+  })()
 
   return (
     <section className="py-20 bg-hero-gradient relative overflow-hidden">

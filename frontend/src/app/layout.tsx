@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
-import { Bitter, Source_Sans_3 } from 'next/font/google'
+import { Bitter, Source_Sans_3, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { AuthProvider } from '@/context/AuthContext'
 import BackToTop from '@/components/ui/BackToTop'
@@ -21,6 +21,13 @@ const sourceSans = Source_Sans_3({
   variable: '--font-sans',
   display: 'swap',
   preload: true,
+})
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['700', '800'],
+  variable: '--font-playfair',
+  display: 'swap',
 })
 
 const SITE_URL = 'https://lakembagmp.com.au'
@@ -70,8 +77,8 @@ export const metadata: Metadata = {
   other: {
     'geo.region': 'AU-NSW',
     'geo.placename': 'Lakemba',
-    'geo.position': '-33.9178;151.0725',
-    'ICBM': '-33.9178, 151.0725',
+    'geo.position': '-33.9176;151.0706',
+    'ICBM': '-33.9176, 151.0706',
     // Add google-site-verification and msvalidate.01 here once obtained from Search Console / Bing
     // 'google-site-verification': 'YOUR_CODE',
     // 'msvalidate.01': 'YOUR_CODE',
@@ -92,7 +99,7 @@ const jsonLd = {
   email: 'info@lakembagmp.com.au',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: '18 The Boulevarde',
+    streetAddress: '21 Haldon St',
     addressLocality: 'Lakemba',
     addressRegion: 'NSW',
     postalCode: '2195',
@@ -100,8 +107,8 @@ const jsonLd = {
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: -33.9178,
-    longitude: 151.0725,
+    latitude: -33.9176,
+    longitude: 151.0706,
   },
   openingHoursSpecification: [
     { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '08:30', closes: '18:00' },
@@ -129,7 +136,7 @@ const jsonLd = {
     { '@type': 'City', name: 'Punchbowl' },
     { '@type': 'City', name: 'Wiley Park' },
   ],
-  hasMap: 'https://maps.google.com/?q=Lakemba+General+Medical+Practice',
+  hasMap: 'https://maps.google.com/?q=21+Haldon+St,+Lakemba+NSW+2195,+Australia',
   sameAs: [
     'https://www.healthengine.com.au',
     'https://www.facebook.com/lakembagmp',
@@ -138,7 +145,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${bitter.variable} ${sourceSans.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${bitter.variable} ${sourceSans.variable} ${playfair.variable}`}>
       <head>
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

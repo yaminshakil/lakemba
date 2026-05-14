@@ -7,7 +7,7 @@ import { useApi } from '@/hooks/useApi'
 import { getServices, adminCreateService, adminUpdateService, adminDeleteService, bustCache } from '@/lib/api'
 import type { Service } from '@/types'
 
-const EMPTY = { title: '', description: '', full_description: '', icon: 'Stethoscope', is_featured: false, order: 0 }
+const EMPTY = { title: '', description: '', full_description: '', icon: 'stethoscope', is_featured: false, order: 0 }
 
 export default function AdminServicesPage() {
   const { data, loading, refetch } = useApi(() => getServices())
@@ -105,7 +105,8 @@ export default function AdminServicesPage() {
                 </div>
                 <div>
                   <label className="label">Icon Name</label>
-                  <input className="input" value={form.icon} onChange={set('icon')} placeholder="Stethoscope" />
+                  <input className="input" value={form.icon} onChange={set('icon')} placeholder="stethoscope" />
+                  <p className="text-xs text-gray-400 mt-1">Options: heart, brain, baby, stethoscope, activity, shield, pill, zap, eye, syringe, clipboard, users, microscope, thermometer</p>
                 </div>
                 <div>
                   <label className="label">Display Order</label>
@@ -116,8 +117,9 @@ export default function AdminServicesPage() {
                   <textarea className="input h-20 resize-none" required value={form.description} onChange={set('description')} placeholder="Brief overview of this service..." />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="label">Full Description</label>
-                  <textarea className="input h-28 resize-none" value={form.full_description} onChange={set('full_description')} placeholder="Detailed description..." />
+                  <label className="label">Bullet Points (one per line)</label>
+                  <textarea className="input h-28 resize-none" value={form.full_description} onChange={set('full_description')} placeholder={"Acute illness management\nHealth assessments\nReferrals to specialists"} />
+                  <p className="text-xs text-gray-400 mt-1">Each line becomes a bullet point on the Services page.</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="svc_featured" checked={form.is_featured} onChange={e => setForm(f => ({ ...f, is_featured: e.target.checked }))} className="w-4 h-4 accent-teal-500" />

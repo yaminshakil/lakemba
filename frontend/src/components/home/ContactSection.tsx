@@ -40,7 +40,7 @@ export default function ContactSection() {
               {/* Map embed */}
               <div className="card overflow-hidden h-48 sm:h-60 rounded-2xl">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3313.6!2d151.0733!3d-33.9185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b7c5d1000001%3A0x0!2sLakemba%2C+NSW+2195!5e0!3m2!1sen!2sau!4v1700000000000!5m2!1sen!2sau"
+                  src="https://maps.google.com/maps?q=21+Haldon+St,+Lakemba+NSW+2195,+Australia&output=embed"
                   width="100%" height="100%" loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Lakemba map"
                   className="border-0"
                 />
@@ -49,7 +49,7 @@ export default function ContactSection() {
               {/* Contact details */}
               <div className="card p-6 space-y-4">
                 {[
-                  { icon: MapPin, label: 'Address',       value: '123 Lakemba Street, Lakemba NSW 2195' },
+                  { icon: MapPin, label: 'Address',       value: '21 Haldon St, Lakemba NSW 2195' },
                   { icon: Phone, label: 'Phone',          value: '(02) 9759 1234' },
                   { icon: Mail,  label: 'Email',          value: 'info@lakembagmp.com.au' },
                   { icon: Clock, label: 'Opening Hours',  value: 'Mon–Fri 8:30am–6pm, Sat 9am–1pm' },

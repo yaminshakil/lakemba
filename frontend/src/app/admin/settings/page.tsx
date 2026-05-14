@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X, Bell } from 'lucide-react'
+import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X, Bell, FileText } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getHomepageSection, adminUploadHomepageImage, adminUploadLogo, getSetting, getSettings, adminUpdateSettings, adminSendTestEmail, bustCache } from '@/lib/api'
+import { getHomepageSection, adminUploadHomepageImage, adminUpdateHomepageSection, adminUploadLogo, getSetting, getSettings, adminUpdateSettings, adminSendTestEmail, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 import { useAuth } from '@/context/AuthContext'
 
@@ -224,13 +224,14 @@ function HeroImageSection() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
   const [status, setStatus] = useState<'idle' | 'saved' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
         const img = res.data?.data?.metadata?.image
-        if (img) setCurrentImage(img)
+        if (img) setCurrentImage(getImageUrl(img))
       })
       .catch(() => {})
   }, [])
@@ -254,17 +255,25 @@ function HeroImageSection() {
     if (!file) return
     setUploading(true)
     setStatus('idle')
+    setErrorMsg('')
     try {
       const fd = new FormData()
       fd.append('image', file)
       const res = await adminUploadHomepageImage('hero', fd)
       const url = res.data?.data?.image_url
-      setCurrentImage(url)
+      setCurrentImage(url ?? null)
       setPreview(null)
       setFile(null)
       setStatus('saved')
+      bustCache('/homepage/hero')
+      if (url) localStorage.setItem('hero_image_url', url)
       if (inputRef.current) inputRef.current.value = ''
-    } catch {
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.errors?.image?.[0] ||
+        err?.response?.data?.message ||
+        `HTTP ${err?.response?.status ?? 'error'}`
+      setErrorMsg(msg)
       setStatus('error')
     } finally {
       setUploading(false)
@@ -344,9 +353,150 @@ function HeroImageSection() {
             <p className="text-sm text-teal-600 font-medium">Image uploaded successfully.</p>
           )}
           {status === 'error' && (
-            <p className="text-sm text-red-500 font-medium">Upload failed. Please try again.</p>
+            <p className="text-sm text-red-500 font-medium">Upload failed: {errorMsg || 'Please try again.'}</p>
           )}
         </div>
+      </div>
+    </AnimatedSection>
+  )
+}
+
+const HERO_DEFAULTS = {
+  clinic_name:         'Lakemba General Medical Practice',
+  tagline_prefix:      'Healthcare for',
+  tagline_highlight:   'Every Generation',
+  description:         'Trusted, compassionate general practice in the heart of Lakemba. Expert care for every member of your family — from routine check-ups to complex health needs.',
+  cta_primary_text:    'Book Appointment',
+  phone:               '(02) 9759 1234',
+  hours:               'Mon–Fri 8:30am–6pm',
+  location:            'Lakemba NSW 2195',
+  info_card_main:      'Lakemba General Medical Practice is open 6 days a week, and provides quality healthcare to the local community. Our team of highly experienced GPs offer a range of healthcare services including chronic disease management, mental health, men\'s health, women\'s health, skin checks, and vaccinations.',
+  info_card_secondary: 'Same-day appointments are available, and we accept walk-ins. The practice is wheelchair accessible with public transport stops nearby. Bulk billing is available for eligible patients.',
+  info_card_notice:    'If you are experiencing any acute respiratory symptoms please wear a mask and notify reception on arrival.',
+}
+
+function HeroContentSection() {
+  const [fields, setFields] = useState<Record<string, string>>(HERO_DEFAULTS)
+  const [saving, setSaving]   = useState(false)
+  const [status, setStatus]   = useState<'idle' | 'saved' | 'error'>('idle')
+
+  useEffect(() => {
+    getHomepageSection('hero')
+      .then(res => {
+        const m = (res as any)?.data?.data?.metadata ?? (res as any)?.data?.metadata ?? {}
+        setFields({
+          clinic_name:         m.clinic_name         || HERO_DEFAULTS.clinic_name,
+          tagline_prefix:      m.tagline_prefix      || HERO_DEFAULTS.tagline_prefix,
+          tagline_highlight:   m.tagline_highlight   || HERO_DEFAULTS.tagline_highlight,
+          description:         m.description         || HERO_DEFAULTS.description,
+          cta_primary_text:    m.cta_primary_text    || HERO_DEFAULTS.cta_primary_text,
+          phone:               m.phone               || HERO_DEFAULTS.phone,
+          hours:               m.hours               || HERO_DEFAULTS.hours,
+          location:            m.location            || HERO_DEFAULTS.location,
+          info_card_main:      m.info_card_main      || HERO_DEFAULTS.info_card_main,
+          info_card_secondary: m.info_card_secondary || HERO_DEFAULTS.info_card_secondary,
+          info_card_notice:    m.info_card_notice    || HERO_DEFAULTS.info_card_notice,
+        })
+      })
+      .catch(() => {})
+  }, [])
+
+  const set = (key: string, val: string) => setFields(f => ({ ...f, [key]: val }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    setStatus('idle')
+    try {
+      await adminUpdateHomepageSection('hero', { metadata: fields })
+      bustCache('/homepage/hero')
+      setStatus('saved')
+      setTimeout(() => setStatus('idle'), 3000)
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <AnimatedSection>
+      <div className="card overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-medical-soft flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary-800 flex items-center justify-center">
+              <FileText className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-primary-900">Hero Section Text</h3>
+          </div>
+          <div className="flex items-center gap-3">
+            {status === 'saved' && <span className="text-sm text-teal-600 font-medium">Saved!</span>}
+            {status === 'error' && <span className="text-sm text-red-500 font-medium">Save failed.</span>}
+            <button onClick={handleSave} disabled={saving} className="btn-teal disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving
+                ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                : <Save className="w-4 h-4" />}
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 grid sm:grid-cols-2 gap-4">
+
+            <div className="sm:col-span-2">
+              <label className="label">Clinic Name</label>
+              <input className="input" value={fields.clinic_name} onChange={e => set('clinic_name', e.target.value)} />
+            </div>
+
+            <div>
+              <label className="label">Tagline — White part</label>
+              <input className="input" placeholder="Healthcare for" value={fields.tagline_prefix} onChange={e => set('tagline_prefix', e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Tagline — Green highlighted part</label>
+              <input className="input" placeholder="Every Generation" value={fields.tagline_highlight} onChange={e => set('tagline_highlight', e.target.value)} />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="label">Description</label>
+              <textarea className="input h-24 resize-none" value={fields.description} onChange={e => set('description', e.target.value)} />
+            </div>
+
+            <div>
+              <label className="label">Phone Number</label>
+              <input className="input" placeholder="(02) 9759 1234" value={fields.phone} onChange={e => set('phone', e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Book Button Text</label>
+              <input className="input" placeholder="Book Appointment" value={fields.cta_primary_text} onChange={e => set('cta_primary_text', e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Hours Pill</label>
+              <input className="input" placeholder="Mon–Fri 8:30am–6pm" value={fields.hours} onChange={e => set('hours', e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Location Pill</label>
+              <input className="input" placeholder="Lakemba NSW 2195" value={fields.location} onChange={e => set('location', e.target.value)} />
+            </div>
+
+            <p className="sm:col-span-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-t border-gray-100 pt-4">
+              Information Card (below hero)
+            </p>
+
+            <div className="sm:col-span-2">
+              <label className="label">Main paragraph</label>
+              <textarea className="input h-28 resize-none" value={fields.info_card_main} onChange={e => set('info_card_main', e.target.value)} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="label">Secondary paragraph</label>
+              <textarea className="input h-20 resize-none" value={fields.info_card_secondary} onChange={e => set('info_card_secondary', e.target.value)} />
+            </div>
+            <div className="sm:col-span-2">
+              <label className="label">Notice (italic)</label>
+              <input className="input" value={fields.info_card_notice} onChange={e => set('info_card_notice', e.target.value)} />
+            </div>
+
+          </div>
       </div>
     </AnimatedSection>
   )
@@ -424,6 +574,7 @@ export default function AdminSettingsPage() {
 
       <LogoUploadSection />
       <HeroImageSection />
+      <HeroContentSection />
 
       {SECTIONS.map((section, si) => {
         const Icon = section.icon

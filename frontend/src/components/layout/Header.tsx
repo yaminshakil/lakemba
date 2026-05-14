@@ -10,16 +10,7 @@ import { getSetting } from '@/lib/api'
 const NAV_ITEMS = [
   { label: 'Home',      href: '/' },
   { label: 'About',     href: '/about' },
-  {
-    label: 'Services', href: '/services',
-    children: [
-      { label: 'General Practice',   href: '/services#general' },
-      { label: 'Preventive Care',    href: '/services#preventive' },
-      { label: 'Mental Health',      href: '/services#mental-health' },
-      { label: 'Chronic Disease',    href: '/services#chronic' },
-      { label: 'All Services',       href: '/services' },
-    ],
-  },
+  { label: 'Services', href: '/services' },
   { label: 'Doctors',     href: '/doctors' },
   { label: 'Fees & Info', href: '/fees-information' },
   { label: 'Contact',     href: '/contact' },
