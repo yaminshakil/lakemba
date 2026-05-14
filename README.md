@@ -9,7 +9,7 @@ A premium, modern medical clinic website for **Lakemba General Medical Practice*
 ```
 E:\Lakemba\
 ├── frontend/          ← Next.js 14 (App Router) + Tailwind + Framer Motion
-└── backend/           ← Laravel 11 REST API + MySQL + Sanctum Auth
+└── backend_fresh/     ← Laravel 11 REST API + MySQL + Sanctum Auth
 ```
 
 ---
@@ -36,7 +36,6 @@ The frontend runs at **http://localhost:3000**
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
-NEXT_PUBLIC_HOTDOC_PRACTICE_ID=your-hotdoc-practice-id
 NEXT_PUBLIC_GOOGLE_MAPS_KEY=your-google-maps-api-key
 ```
 
@@ -53,11 +52,7 @@ NEXT_PUBLIC_GOOGLE_MAPS_KEY=your-google-maps-api-key
 ### Installation
 
 ```bash
-# Install Laravel (if not existing)
-composer create-project laravel/laravel backend --prefer-dist
-cd backend
-
-# Copy our files over the created project, then:
+cd backend_fresh
 composer install
 cp .env.example .env
 php artisan key:generate
@@ -109,7 +104,7 @@ Access: **http://localhost:3000/admin**
 - Email: `admin@lakembagmp.com.au`
 - Password: `admin123`
 
-**⚠️ Change the admin password immediately in production!**
+**Change the admin password immediately in production.**
 
 ### Admin Features
 - Dashboard with content counts
@@ -119,54 +114,57 @@ Access: **http://localhost:3000/admin**
 - **Testimonials** — Add and feature patient reviews
 - **FAQs** — Manage frequently asked questions
 - **Gallery** — Upload and organise clinic photos
-- **Settings** — Configure contact details, hours, SEO, integrations
+- **Settings** — Configure contact details, hours, SEO, booking integration, email notifications
 
 ---
 
-## HotDoc Booking Integration
+## HealthEngine Booking Integration
 
-1. Log in to your [HotDoc Provider Portal](https://www.hotdoc.com.au/provider)
-2. Get your **Practice ID** from the widget settings
-3. Add to `frontend/.env.local`: `NEXT_PUBLIC_HOTDOC_PRACTICE_ID=your-id`
-4. The booking buttons throughout the site will link to your HotDoc booking page
+Booking is powered by [HealthEngine](https://healthengine.com.au) — Australia's most widely used medical booking platform.
 
-The HotDoc URL used throughout the site:
-```
-https://www.hotdoc.com.au/medical-centres/lakemba-2195/lakemba-general-medical-practice/
-```
+### Setup (no code changes required)
+
+1. Log in to your HealthEngine Provider account and copy your practice booking URL
+   - Format: `https://healthengine.com.au/book-appointment/your-practice-slug`
+2. Go to **Admin → Settings → Booking Integration**
+3. Paste the URL into the **HealthEngine Booking URL** field and save
+
+All "Book Appointment" buttons across the site (Hero, Header, Booking page) will immediately use the saved URL. The URL is cached in `localStorage` for instant subsequent loads, with the admin-saved value always taking precedence.
 
 ---
 
 ## Pages
 
 ### Public Site
-| Page            | Route              |
-|-----------------|--------------------|
-| Home            | `/`                |
-| About           | `/about`           |
-| Doctors         | `/doctors`         |
-| Doctor Detail   | `/doctors/[id]`    |
-| Services        | `/services`        |
-| Book Appointment| `/booking`         |
-| Blog            | `/blog`            |
-| Blog Post       | `/blog/[slug]`     |
-| FAQ             | `/faq`             |
-| Contact         | `/contact`         |
-| Emergency       | `/emergency`       |
+| Page             | Route              |
+|------------------|--------------------|
+| Home             | `/`                |
+| About            | `/about`           |
+| Doctors          | `/doctors`         |
+| Doctor Detail    | `/doctors/[id]`    |
+| Services         | `/services`        |
+| Book Appointment | `/booking`         |
+| Blog             | `/blog`            |
+| Blog Post        | `/blog/[slug]`     |
+| FAQ              | `/faq`             |
+| Contact          | `/contact`         |
+| Emergency        | `/emergency`       |
+| Fees Information | `/fees-information`|
+| Terms            | `/terms`           |
 
 ### Admin Panel
-| Page            | Route                    |
-|-----------------|--------------------------|
-| Dashboard       | `/admin`                 |
-| Login           | `/admin/login`           |
-| Doctors         | `/admin/doctors`         |
-| Add Doctor      | `/admin/doctors/new`     |
-| Services        | `/admin/services`        |
-| Blog            | `/admin/blog`            |
-| Testimonials    | `/admin/testimonials`    |
-| FAQs            | `/admin/faqs`            |
-| Gallery         | `/admin/gallery`         |
-| Settings        | `/admin/settings`        |
+| Page          | Route                    |
+|---------------|--------------------------|
+| Dashboard     | `/admin`                 |
+| Login         | `/admin/login`           |
+| Doctors       | `/admin/doctors`         |
+| Add Doctor    | `/admin/doctors/new`     |
+| Services      | `/admin/services`        |
+| Blog          | `/admin/blog`            |
+| Testimonials  | `/admin/testimonials`    |
+| FAQs          | `/admin/faqs`            |
+| Gallery       | `/admin/gallery`         |
+| Settings      | `/admin/settings`        |
 
 ---
 
@@ -186,7 +184,7 @@ GET  /api/gallery                 Gallery images
 GET  /api/homepage                Homepage section content
 GET  /api/contact                 Contact & hours
 GET  /api/settings                Site settings
-POST /api/contact/submit          Contact form
+POST /api/contact/submit          Contact form submission
 POST /api/newsletter/subscribe    Newsletter signup
 
 POST   /api/admin/login
@@ -208,10 +206,10 @@ PUT    /api/admin/homepage/{key}  (auth required)
 ## Design System
 
 ### Colors
-- **Primary Navy:** `#1E3A5F` → trust, professionalism
-- **Medical Teal:** `#0D9488` → CTAs, highlights
-- **Light Blue:** `#EBF4FF` → backgrounds, badges
-- **Background:** `#F8FAFC` → page background
+- **Primary Navy:** `#1E3A5F` — trust, professionalism
+- **Medical Teal:** `#0D9488` — CTAs, highlights
+- **Light Blue:** `#EBF4FF` — backgrounds, badges
+- **Background:** `#F8FAFC` — page background
 
 ### Key Design Features
 - Glassmorphism hero section with floating stats
@@ -220,7 +218,6 @@ PUT    /api/admin/homepage/{key}  (auth required)
 - Sticky "Book Appointment" floating button
 - Emergency contact floating button
 - Fully responsive (mobile → ultra-wide)
-- Dark mode support via `next-themes`
 - Accessible markup (ARIA labels, focus management)
 
 ---
@@ -236,7 +233,7 @@ npm run build
 
 ### Backend (Laravel Forge / any PHP host)
 ```bash
-cd backend
+cd backend_fresh
 composer install --optimize-autoloader --no-dev
 php artisan config:cache
 php artisan route:cache
@@ -254,15 +251,15 @@ Set environment variables on your host:
 
 ## Technology Stack
 
-| Layer      | Technology             |
-|------------|------------------------|
-| Framework  | Next.js 14 (App Router)|
-| Styling    | Tailwind CSS 3         |
-| Animations | Framer Motion 11       |
-| HTTP       | Axios                  |
-| Icons      | Lucide React           |
-| Backend    | Laravel 11             |
-| Auth       | Laravel Sanctum        |
-| Database   | MySQL 8.0              |
-| Booking    | HotDoc                 |
-| Fonts      | Inter (Google Fonts)   |
+| Layer      | Technology              |
+|------------|-------------------------|
+| Framework  | Next.js 14 (App Router) |
+| Styling    | Tailwind CSS 3          |
+| Animations | Framer Motion 11        |
+| HTTP       | Axios                   |
+| Icons      | Lucide React            |
+| Backend    | Laravel 11              |
+| Auth       | Laravel Sanctum         |
+| Database   | MySQL 8.0               |
+| Booking    | HealthEngine            |
+| Fonts      | Inter (Google Fonts)    |
