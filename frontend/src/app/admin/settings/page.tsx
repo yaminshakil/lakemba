@@ -230,7 +230,7 @@ function HeroImageSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const img = res.data?.metadata?.image
+        const img = res.data?.metadata?.image as string | undefined
         if (img) setCurrentImage(getImageUrl(img))
       })
       .catch(() => {})
@@ -383,7 +383,7 @@ function HeroContentSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const m = res.data?.metadata ?? {}
+        const m = (res.data?.metadata ?? {}) as Record<string, any>
         setFields({
           clinic_name:         m.clinic_name         || HERO_DEFAULTS.clinic_name,
           tagline_prefix:      m.tagline_prefix      || HERO_DEFAULTS.tagline_prefix,
