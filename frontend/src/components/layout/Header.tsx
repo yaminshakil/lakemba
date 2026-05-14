@@ -7,7 +7,9 @@ import { Phone, Menu, X, ChevronDown, Calendar } from 'lucide-react'
 import { cn, getImageUrl } from '@/lib/utils'
 import { getSetting } from '@/lib/api'
 
-const NAV_ITEMS = [
+type NavItem = { label: string; href: string; children?: { label: string; href: string }[] }
+
+const NAV_ITEMS: NavItem[] = [
   { label: 'Home',      href: '/' },
   { label: 'About',     href: '/about' },
   { label: 'Services', href: '/services' },

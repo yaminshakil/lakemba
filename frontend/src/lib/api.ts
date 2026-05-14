@@ -19,9 +19,9 @@ async function cachedGet<T>(url: string): Promise<T> {
 }
 
 export function bustCache(prefix: string) {
-  for (const key of cache.keys()) {
+  cache.forEach((_, key) => {
     if (key.startsWith(prefix)) cache.delete(key)
-  }
+  })
 }
 
 api.interceptors.request.use((config) => {

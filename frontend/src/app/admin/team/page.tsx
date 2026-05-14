@@ -70,7 +70,7 @@ export default function AdminTeamPage() {
       setForm({ name: '', email: '', password: '', password_confirmation: '', role: 'manager' })
       setShowForm(false)
     } catch (err: any) {
-      const msg = err?.response?.data?.message || Object.values(err?.response?.data?.errors ?? {})?.[0]?.[0] || 'Failed to create user.'
+      const msg = err?.response?.data?.message || (Object.values(err?.response?.data?.errors ?? {}) as string[][])?.[0]?.[0] || 'Failed to create user.'
       setFormError(msg as string)
     } finally {
       setSaving(false)
