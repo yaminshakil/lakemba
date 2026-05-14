@@ -26,7 +26,7 @@ export default function HealthEngineWidget({
 
     getSettings()
       .then(res => {
-        const settings = res.data?.data as Record<string, string> | undefined
+        const settings = res.data as Record<string, string> | undefined
         if (settings?.healthengine_url) {
           setBookingUrl(settings.healthengine_url)
           localStorage.setItem('healthengine_url', settings.healthengine_url)

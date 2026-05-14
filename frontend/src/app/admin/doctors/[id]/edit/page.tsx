@@ -24,7 +24,7 @@ export default function EditDoctorPage() {
 
   useEffect(() => {
     getDoctor(id).then(res => {
-      const d = res.data.data
+      const d = res.data
       setForm({
         name: d.name, qualifications: d.qualifications, specialty: d.specialty,
         experience_years: d.experience_years, biography: d.biography,

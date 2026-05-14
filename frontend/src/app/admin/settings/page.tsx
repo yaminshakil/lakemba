@@ -95,7 +95,7 @@ function LogoUploadSection() {
   useEffect(() => {
     getSetting('site_logo')
       .then(res => {
-        const path = res.data?.data?.value
+        const path = res.data?.value
         if (path) setCurrentLogo(getImageUrl(path))
       })
       .catch(() => {})
@@ -230,7 +230,7 @@ function HeroImageSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const img = res.data?.data?.metadata?.image
+        const img = res.data?.metadata?.image
         if (img) setCurrentImage(getImageUrl(img))
       })
       .catch(() => {})
@@ -383,7 +383,7 @@ function HeroContentSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const m = (res as any)?.data?.data?.metadata ?? (res as any)?.data?.metadata ?? {}
+        const m = res.data?.metadata ?? {}
         setFields({
           clinic_name:         m.clinic_name         || HERO_DEFAULTS.clinic_name,
           tagline_prefix:      m.tagline_prefix      || HERO_DEFAULTS.tagline_prefix,
@@ -518,7 +518,7 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     getSettings()
-      .then(res => { if (res.data?.data) setValues(res.data.data as Record<string, string>) })
+      .then(res => { if (res.data) setValues(res.data as Record<string, string>) })
       .catch(() => {})
   }, [])
 

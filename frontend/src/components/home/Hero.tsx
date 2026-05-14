@@ -36,7 +36,7 @@ export default function Hero() {
 
     getHomepageSection('hero')
       .then(res => {
-        const m = res.data?.data?.metadata ?? {}
+        const m = res.data?.metadata ?? {}
         if (m.image) {
           const url = getImageUrl(m.image)
           setHeroImage(url)

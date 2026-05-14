@@ -42,7 +42,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
     getSetting('site_logo')
       .then(res => {
-        const path = res.data?.data?.value
+        const path = res.data?.value
         if (path) {
           const url = getImageUrl(path)
           setLogoUrl(url)
