@@ -7,7 +7,7 @@ A premium, modern medical clinic website for **Lakemba General Medical Practice*
 ## Project Structure
 
 ```
-E:\Lakemba\
+lakemba/
 ├── frontend/          ← Next.js 14 (App Router) + Tailwind + Framer Motion
 └── backend_fresh/     ← Laravel 11 REST API + MySQL + Sanctum Auth
 ```
@@ -36,6 +36,8 @@ The frontend runs at **http://localhost:3000**
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_HEALTHENGINE_URL=https://healthengine.com.au/book-appointment/your-practice-slug
 NEXT_PUBLIC_GOOGLE_MAPS_KEY=your-google-maps-api-key
 ```
 
@@ -153,18 +155,26 @@ All "Book Appointment" buttons across the site (Hero, Header, Booking page) will
 | Terms            | `/terms`           |
 
 ### Admin Panel
-| Page          | Route                    |
-|---------------|--------------------------|
-| Dashboard     | `/admin`                 |
-| Login         | `/admin/login`           |
-| Doctors       | `/admin/doctors`         |
-| Add Doctor    | `/admin/doctors/new`     |
-| Services      | `/admin/services`        |
-| Blog          | `/admin/blog`            |
-| Testimonials  | `/admin/testimonials`    |
-| FAQs          | `/admin/faqs`            |
-| Gallery       | `/admin/gallery`         |
-| Settings      | `/admin/settings`        |
+| Page              | Route                        |
+|-------------------|------------------------------|
+| Dashboard         | `/admin`                     |
+| Login             | `/admin/login`               |
+| Doctors           | `/admin/doctors`             |
+| Add Doctor        | `/admin/doctors/new`         |
+| Edit Doctor       | `/admin/doctors/[id]/edit`   |
+| Services          | `/admin/services`            |
+| Blog              | `/admin/blog`                |
+| New Blog Post     | `/admin/blog/new`            |
+| Edit Blog Post    | `/admin/blog/[id]/edit`      |
+| Testimonials      | `/admin/testimonials`        |
+| FAQs              | `/admin/faqs`                |
+| Gallery           | `/admin/gallery`             |
+| Messages          | `/admin/messages`            |
+| Fees              | `/admin/fees`                |
+| Profile           | `/admin/profile`             |
+| Settings          | `/admin/settings`            |
+| Forgot Password   | `/admin/forgot-password`     |
+| Reset Password    | `/admin/reset-password`      |
 
 ---
 
@@ -184,21 +194,40 @@ GET  /api/gallery                 Gallery images
 GET  /api/homepage                Homepage section content
 GET  /api/contact                 Contact & hours
 GET  /api/settings                Site settings
+GET  /api/settings/{key}          Single setting value
+GET  /api/seo/{page}              SEO meta for a page
+GET  /api/fees                    Fees & billing information
 POST /api/contact/submit          Contact form submission
 POST /api/newsletter/subscribe    Newsletter signup
 
 POST   /api/admin/login
-POST   /api/admin/logout          (auth required)
-CRUD   /api/admin/doctors         (auth required)
-CRUD   /api/admin/services        (auth required)
-CRUD   /api/admin/blog            (auth required)
-CRUD   /api/admin/testimonials    (auth required)
-CRUD   /api/admin/faqs            (auth required)
-POST   /api/admin/gallery         (auth required)
-DELETE /api/admin/gallery/{id}    (auth required)
-PUT    /api/admin/settings        (auth required)
-PUT    /api/admin/contact         (auth required)
-PUT    /api/admin/homepage/{key}  (auth required)
+POST   /api/admin/logout                   (auth required)
+GET    /api/admin/dashboard                (auth required)
+PUT    /api/admin/profile                  (auth required)
+PUT    /api/admin/profile/password         (auth required)
+POST   /api/admin/password/forgot
+POST   /api/admin/password/reset
+CRUD   /api/admin/doctors                  (auth required)
+CRUD   /api/admin/services                 (auth required)
+CRUD   /api/admin/blog                     (auth required)
+CRUD   /api/admin/testimonials             (auth required)
+CRUD   /api/admin/faqs                     (auth required)
+POST   /api/admin/gallery                  (auth required)
+DELETE /api/admin/gallery/{id}             (auth required)
+PUT    /api/admin/homepage/{key}           (auth required)
+POST   /api/admin/homepage/{key}/image     (auth required)
+PUT    /api/admin/contact                  (auth required)
+GET    /api/admin/messages                 (auth required)
+GET    /api/admin/messages/unread-count    (auth required)
+GET    /api/admin/messages/{id}            (auth required)
+PATCH  /api/admin/messages/{id}/read       (auth required)
+POST   /api/admin/messages/{id}/reply      (auth required)
+DELETE /api/admin/messages/{id}            (auth required)
+PUT    /api/admin/settings                 (auth required)
+POST   /api/admin/settings/logo            (auth required)
+POST   /api/admin/settings/test-email      (auth required)
+PUT    /api/admin/seo/{page}               (auth required)
+PUT    /api/admin/fees                     (auth required)
 ```
 
 ---
