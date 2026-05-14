@@ -14,8 +14,8 @@ async function cachedGet<T>(url: string): Promise<T> {
   const hit = cache.get(url)
   if (hit && Date.now() - hit.ts < TTL) return hit.data as T
   const res = await api.get<T>(url)
-  cache.set(url, { data: res, ts: Date.now() })
-  return res as T
+  cache.set(url, { data: res.data, ts: Date.now() })
+  return res.data
 }
 
 export function bustCache(prefix: string) {
