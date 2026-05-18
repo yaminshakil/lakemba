@@ -103,7 +103,7 @@ class HomepageController extends Controller
 
         $dbImage = Setting::get("homepage_{$key}_image");
         if ($dbImage) {
-            $defaults['metadata']['image'] = Storage::disk('public')->url($dbImage);
+            $defaults['metadata']['image'] = $dbImage;
         }
 
         return response()->json(['data' => $defaults]);

@@ -11,7 +11,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'ui-avatars.com' },
       { protocol: 'http',  hostname: 'localhost' },
-      { protocol: 'https', hostname: 'your-api-domain.com' },
+      { protocol: 'https', hostname: 'lgmp.com.au' },
+      { protocol: 'https', hostname: 'www.lgmp.com.au' },
     ],
   },
   async headers() {
