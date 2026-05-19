@@ -2,9 +2,12 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AlertCircle, X, Phone, ExternalLink } from 'lucide-react'
+import { useContactSettings } from '@/hooks/useContactSettings'
+import { toTelHref } from '@/lib/utils'
 
 export default function EmergencyContact() {
   const [open, setOpen] = useState(false)
+  const contact = useContactSettings()
 
   return (
     <div className="fixed bottom-6 left-6 z-40">
@@ -39,8 +42,8 @@ export default function EmergencyContact() {
               </div>
               <div className="p-3 bg-blue-50 rounded-xl">
                 <p className="text-xs text-primary-700 font-semibold uppercase tracking-wide mb-1">Our Practice</p>
-                <a href="tel:+61297591234" className="flex items-center gap-2 text-primary-700 font-bold hover:text-primary-800">
-                  <Phone className="w-4 h-4" /> (02) 9759 1234
+                <a href={toTelHref(contact.phonePrimary)} className="flex items-center gap-2 text-primary-700 font-bold hover:text-primary-800">
+                  <Phone className="w-4 h-4" /> {contact.phonePrimary}
                 </a>
               </div>
               <a href="/emergency" className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors">

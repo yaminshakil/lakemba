@@ -4,11 +4,12 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Hero from '@/components/home/Hero'
 import QuickBooking from '@/components/home/QuickBooking'
-import DoctorHighlights from '@/components/home/DoctorHighlights'
-import ServicesOverview from '@/components/home/ServicesOverview'
 
-const FAQSection      = dynamic(() => import('@/components/home/FAQSection'))
-const ContactSection  = dynamic(() => import('@/components/home/ContactSection'))
+// Below-the-fold sections: split into separate JS chunks
+const DoctorHighlights = dynamic(() => import('@/components/home/DoctorHighlights'))
+const ServicesOverview = dynamic(() => import('@/components/home/ServicesOverview'))
+const FAQSection       = dynamic(() => import('@/components/home/FAQSection'))
+const ContactSection   = dynamic(() => import('@/components/home/ContactSection'))
 
 export const metadata: Metadata = {
   title: 'Lakemba General Medical Practice | Trusted Bulk Billing GP – Lakemba NSW 2195',

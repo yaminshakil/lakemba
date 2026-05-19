@@ -39,7 +39,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     )
   }
 
-  const readTime = Math.max(1, Math.ceil(post.content.split(' ').length / 200))
+  const readTime = Math.max(1, Math.ceil((post.content || '').split(' ').length / 200))
 
   return (
     <>
@@ -47,7 +47,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       <main className="pt-28">
         {/* Hero */}
         {post.image && (
-          <div className="relative h-72 md:h-96 overflow-hidden">
+          <div className="relative h-48 sm:h-72 md:h-96 overflow-hidden">
             <Image src={getImageUrl(post.image)} alt={post.title} fill className="object-cover" priority />
             <div className="absolute inset-0 bg-gradient-to-t from-primary-900/60 to-transparent" />
           </div>
@@ -76,7 +76,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
               <div className="flex items-center gap-3 mb-8 pb-8 border-b border-gray-100">
                 <div className="w-10 h-10 rounded-full bg-primary-800 flex items-center justify-center text-white font-bold text-sm">
-                  {post.author.split(' ').map(n => n[0]).join('')}
+                  {(post.author || '').split(' ').map(n => n[0]).join('')}
                 </div>
                 <div>
                   <p className="font-semibold text-primary-900 text-sm">{post.author}</p>
@@ -86,7 +86,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
               {/* Content */}
               <div className="prose prose-slate max-w-none prose-headings:text-primary-900 prose-a:text-teal-600"
-                dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br/>') }}
+                dangerouslySetInnerHTML={{ __html: (post.content || '').replace(/\n/g, '<br/>') }}
               />
 
               {/* Tags */}

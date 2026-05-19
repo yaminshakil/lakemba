@@ -5,17 +5,34 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function openHEBooking(): void {
+  if (typeof window === 'undefined') return
+  if (typeof window.openHEBooking === 'function') {
+    window.openHEBooking()
+  } else {
+    window.open('https://healthengine.com.au/book-appointment/lakemba-general-medical-practice', '_blank', 'noopener,noreferrer')
+  }
+}
+
 export function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('en-AU', {
     year: 'numeric', month: 'long', day: 'numeric',
   })
 }
 
+export function toTelHref(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  return digits.startsWith('0') ? `tel:+61${digits.slice(1)}` : `tel:+${digits}`
+}
+
 export function getImageUrl(path: string): string {
   if (!path) return '/images/placeholder.jpg'
   if (path.startsWith('http')) return path
-  const base = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000'
-  return `${base}/storage/${path}`
+  // Prefer an explicit NEXT_PUBLIC_STORAGE_URL; fall back to deriving from the API URL
+  const storageBase =
+    process.env.NEXT_PUBLIC_STORAGE_URL?.replace(/\/$/, '') ||
+    `${(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api').replace(/\/api\/?$/, '')}/storage`
+  return `${storageBase}/${path}`
 }
 
 export function truncate(str: string, length: number): string {

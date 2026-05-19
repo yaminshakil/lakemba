@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\HomepageController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\FeesController;
+use App\Http\Controllers\Api\AboutController;
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\PasswordResetController;
 use App\Http\Controllers\Admin\ProfileController;
@@ -62,6 +63,9 @@ Route::get('/seo/{page}', [SettingController::class, 'seo']);
 
 // Fees & Information
 Route::get('/fees', [FeesController::class, 'show']);
+
+// About page
+Route::get('/about', [AboutController::class, 'show']);
 
 
 /*
@@ -130,5 +134,9 @@ Route::prefix('admin')->group(function () {
 
         // Admin Fees & Information
         Route::put('/fees',                [FeesController::class, 'update']);
+
+        // Admin About page
+        Route::put('/about',               [AboutController::class, 'update']);
+        Route::post('/about/image',        [AboutController::class, 'uploadImage']);
     });
 });

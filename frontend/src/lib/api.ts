@@ -6,22 +6,67 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 })
 
-// Simple in-memory cache for GET requests (15 min TTL)
+// In-memory cache + sessionStorage persistence for GET requests (15 min TTL)
 const cache = new Map<string, { data: any; ts: number }>()
+const pending = new Map<string, Promise<any>>()
 const TTL = 15 * 60 * 1000
+const SS_PREFIX = 'apicache_'
+
+function ssRead(url: string): { data: any; ts: number } | null {
+  if (typeof sessionStorage === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(SS_PREFIX + url)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+
+function ssWrite(url: string, data: any) {
+  if (typeof sessionStorage === 'undefined') return
+  try { sessionStorage.setItem(SS_PREFIX + url, JSON.stringify({ data, ts: Date.now() })) } catch {}
+}
+
+function ssDelete(prefix: string) {
+  if (typeof sessionStorage === 'undefined') return
+  try {
+    Object.keys(sessionStorage)
+      .filter(k => k.startsWith(SS_PREFIX + prefix))
+      .forEach(k => sessionStorage.removeItem(k))
+  } catch {}
+}
 
 async function cachedGet<T>(url: string): Promise<T> {
+  // 1. Hot in-memory hit
   const hit = cache.get(url)
   if (hit && Date.now() - hit.ts < TTL) return hit.data as T
-  const res = await api.get<T>(url)
-  cache.set(url, { data: res.data, ts: Date.now() })
-  return res.data
+
+  // 2. Deduplicate concurrent in-flight requests for the same URL
+  const inflight = pending.get(url)
+  if (inflight) return inflight as Promise<T>
+
+  // 3. Cold sessionStorage hit (survives navigation, costs ~0 ms)
+  const stored = ssRead(url)
+  if (stored && Date.now() - stored.ts < TTL) {
+    cache.set(url, stored)
+    return stored.data as T
+  }
+
+  // 4. Network fetch — shared across concurrent callers
+  const promise = api.get<T>(url)
+    .then(res => {
+      cache.set(url, { data: res.data, ts: Date.now() })
+      ssWrite(url, res.data)
+      return res.data
+    })
+    .finally(() => pending.delete(url))
+
+  pending.set(url, promise)
+  return promise
 }
 
 export function bustCache(prefix: string) {
-  cache.forEach((_, key) => {
-    if (key.startsWith(prefix)) cache.delete(key)
-  })
+  cache.forEach((_, key) => { if (key.startsWith(prefix)) cache.delete(key) })
+  ssDelete(prefix)
 }
 
 api.interceptors.request.use((config) => {
@@ -153,6 +198,11 @@ export const adminUpdateSeoMeta = (page: string, data: object) => api.put(`/admi
 
 export const getFeesSettings = () => api.get('/fees')
 export const adminUpdateFeesSettings = (data: object) => api.put('/admin/fees', data)
+
+export const getAboutData = () => cachedGet<any>('/about')
+export const adminUpdateAboutData = (data: object) => api.put('/admin/about', data)
+export const adminUploadAboutImage = (data: FormData) =>
+  api.post('/admin/about/image', data, { headers: { 'Content-Type': 'multipart/form-data' } })
 
 export const adminGetUsers = () => api.get('/admin/users')
 export const adminCreateUser = (data: { name: string; email: string; password: string; password_confirmation: string; role: 'admin' | 'manager' }) =>

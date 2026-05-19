@@ -26,7 +26,7 @@ export default function Stats() {
           <h2 className="text-3xl md:text-4xl font-bold text-white">Trusted by Thousands Across Lakemba</h2>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {STATS.map(({ icon: Icon, value, suffix, label, color }, i) => (
             <div
               key={label}

@@ -67,6 +67,17 @@ class HomepageController extends Controller
                 'title'    => 'What Our Patients Say',
                 'is_active'=> true,
             ],
+            [
+                'key'      => 'quick_booking',
+                'title'    => 'Quick Booking Banner',
+                'is_active'=> true,
+                'metadata' => [
+                    'badge_text'       => 'Book Online Instantly',
+                    'heading'          => 'Ready to see a doctor?',
+                    'description'      => 'Book your appointment online in seconds using HealthEngine — available 24/7. Same-day appointments often available.',
+                    'book_button_text' => 'Book Online',
+                ],
+            ],
         ];
     }
 

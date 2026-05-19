@@ -4,8 +4,11 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { submitContactForm } from '@/lib/api'
+import { useContactSettings } from '@/hooks/useContactSettings'
+import { toTelHref } from '@/lib/utils'
 
 export default function ContactSection() {
+  const contact = useContactSettings()
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -49,18 +52,21 @@ export default function ContactSection() {
               {/* Contact details */}
               <div className="card p-6 space-y-4">
                 {[
-                  { icon: MapPin, label: 'Address',       value: '21 Haldon St, Lakemba NSW 2195' },
-                  { icon: Phone, label: 'Phone',          value: '(02) 9759 1234' },
-                  { icon: Mail,  label: 'Email',          value: 'info@lakembagmp.com.au' },
-                  { icon: Clock, label: 'Opening Hours',  value: 'Mon–Fri 8:30am–6pm, Sat 9am–1pm' },
-                ].map(({ icon: Icon, label, value }) => (
+                  { icon: MapPin, label: 'Address',      value: contact.address },
+                  { icon: Phone,  label: 'Phone',        value: contact.phonePrimary,  href: toTelHref(contact.phonePrimary) },
+                  { icon: Mail,   label: 'Email',        value: contact.emailPrimary,  href: `mailto:${contact.emailPrimary}` },
+                  { icon: Clock,  label: 'Opening Hours',value: `${contact.hoursMF}, ${contact.hoursSat}` },
+                ].map(({ icon: Icon, label, value, href }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-medical-light flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4 text-primary-700" />
                     </div>
                     <div>
                       <div className="text-xs text-gray-400 mb-0.5">{label}</div>
-                      <div className="text-gray-800 font-medium text-sm">{value}</div>
+                      {href
+                        ? <a href={href} className="text-gray-800 font-medium text-sm hover:text-primary-700 transition-colors">{value}</a>
+                        : <div className="text-gray-800 font-medium text-sm">{value}</div>
+                      }
                     </div>
                   </div>
                 ))}
@@ -70,7 +76,7 @@ export default function ContactSection() {
 
           {/* Contact form */}
           <AnimatedSection direction="right">
-            <div className="card p-8">
+            <div className="card p-5 sm:p-8">
               {submitted ? (
                 <div className="flex flex-col items-center text-center py-8 gap-4">
                   <div className="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center">

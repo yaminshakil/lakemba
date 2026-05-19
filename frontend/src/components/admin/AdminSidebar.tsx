@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { LayoutDashboard, Users, Briefcase, HelpCircle, Settings, LogOut, ChevronRight, DollarSign, MessageSquare, UserCog, UserCircle, X } from 'lucide-react'
+import { LayoutDashboard, Users, Briefcase, HelpCircle, Settings, LogOut, ChevronRight, DollarSign, MessageSquare, UserCog, UserCircle, X, Info } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { adminGetUnreadCount, getSetting } from '@/lib/api'
 import { cn, getImageUrl } from '@/lib/utils'
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { icon: Users,           label: 'Doctors',     href: '/admin/doctors',   adminOnly: false },
   { icon: Briefcase,       label: 'Services',    href: '/admin/services',  adminOnly: false },
   { icon: HelpCircle,      label: 'FAQs',        href: '/admin/faqs',      adminOnly: false },
+  { icon: Info,            label: 'About Page',  href: '/admin/about',     adminOnly: false },
   { icon: DollarSign,      label: 'Fees & Info', href: '/admin/fees',      adminOnly: false },
   { icon: MessageSquare,   label: 'Messages',    href: '/admin/messages',  adminOnly: false },
   { icon: UserCog,         label: 'Team',        href: '/admin/team',      adminOnly: true  },

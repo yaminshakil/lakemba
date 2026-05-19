@@ -1,16 +1,22 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { Calendar, ExternalLink } from 'lucide-react'
-import { getSettings } from '@/lib/api'
+import { useEffect, useRef } from 'react'
+import { Calendar } from 'lucide-react'
+
+const HE_ID = '102472'
+const HE_SRC = 'https://healthengine.com.au/webplugin/appointments.js'
 
 interface Props {
-  mode?: 'button' | 'iframe' | 'lightbox'
+  mode?: 'button' | 'iframe' | 'lightbox' | 'he-button'
   className?: string
   buttonText?: string
   buttonStyle?: 'primary' | 'teal' | 'white'
 }
 
-const FALLBACK_URL = 'https://healthengine.com.au/book-appointment/lakemba-general-medical-practice'
+function openHEBooking() {
+  if (typeof window !== 'undefined' && typeof window.openHEBooking === 'function') {
+    window.openHEBooking()
+  }
+}
 
 export default function HealthEngineWidget({
   mode = 'lightbox',
@@ -18,22 +24,21 @@ export default function HealthEngineWidget({
   buttonText = 'Book Appointment Online',
   buttonStyle = 'teal',
 }: Props) {
-  const [bookingUrl, setBookingUrl] = useState<string>(FALLBACK_URL)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const cached = localStorage.getItem('healthengine_url')
-    if (cached) setBookingUrl(cached)
-
-    getSettings()
-      .then(res => {
-        const settings = res.data as Record<string, string> | undefined
-        if (settings?.healthengine_url) {
-          setBookingUrl(settings.healthengine_url)
-          localStorage.setItem('healthengine_url', settings.healthengine_url)
-        }
-      })
-      .catch(() => {})
-  }, [])
+    if (mode !== 'he-button' || !containerRef.current) return
+    const container = containerRef.current
+    const script = document.createElement('script')
+    script.src = HE_SRC
+    script.setAttribute('data-he-id', HE_ID)
+    script.setAttribute('data-he-button', 'true')
+    script.setAttribute('data-he-img', 'HE_BOOKNOW_NEWBRAND_1.png')
+    container.appendChild(script)
+    return () => {
+      if (script.parentNode === container) container.removeChild(script)
+    }
+  }, [mode])
 
   const btnClasses: Record<string, string> = {
     primary: 'btn-primary text-base px-8 py-4',
@@ -41,11 +46,15 @@ export default function HealthEngineWidget({
     white:   'btn-white text-base px-8 py-4',
   }
 
+  if (mode === 'he-button') {
+    return <div ref={containerRef} className={className} />
+  }
+
   if (mode === 'iframe') {
     return (
       <div className={`w-full min-h-96 rounded-2xl overflow-hidden ${className}`}>
         <iframe
-          src={bookingUrl}
+          src="https://healthengine.com.au/book-appointment/lakemba-general-medical-practice"
           className="w-full h-full min-h-96 border-0 rounded-2xl"
           title="Book an appointment"
           allow="geolocation"
@@ -54,16 +63,15 @@ export default function HealthEngineWidget({
     )
   }
 
+  // lightbox + button modes: styled button that opens the HE popup
   return (
-    <a
-      href={bookingUrl}
-      target="_blank"
-      rel="noopener noreferrer"
+    <button
+      type="button"
+      onClick={openHEBooking}
       className={`${btnClasses[buttonStyle]} inline-flex items-center gap-2 ${className}`}
     >
       <Calendar className="w-5 h-5" />
       {buttonText}
-      <ExternalLink className="w-4 h-4 opacity-70" />
-    </a>
+    </button>
   )
 }

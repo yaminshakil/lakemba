@@ -1,14 +1,15 @@
 'use client'
 import Link from 'next/link'
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram, Twitter, Heart } from 'lucide-react'
+import { openHEBooking, toTelHref } from '@/lib/utils'
+import { useContactSettings } from '@/hooks/useContactSettings'
 
-const QUICK_LINKS = [
+const QUICK_LINKS: { label: string; href?: string; booking?: true }[] = [
   { label: 'Home',          href: '/' },
   { label: 'About Us',      href: '/about' },
   { label: 'Our Doctors',   href: '/doctors' },
   { label: 'Services',      href: '/services' },
-  { label: 'Book Online',   href: '/booking' },
-  { label: 'Blog & News',   href: '/blog' },
+  { label: 'Book Online',   booking: true },
   { label: 'Contact',       href: '/contact' },
   { label: 'Emergency',     href: '/emergency' },
 ]
@@ -25,6 +26,7 @@ const SERVICES = [
 ]
 
 export default function Footer() {
+  const contact = useContactSettings()
   return (
     <footer className="bg-primary-950 text-white">
       {/* Main footer */}
@@ -67,12 +69,23 @@ export default function Footer() {
             <h3 className="font-semibold text-white mb-5 text-sm uppercase tracking-wider">Quick Links</h3>
             <ul className="space-y-2.5">
               {QUICK_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href}
-                    className="text-white/60 hover:text-teal-400 text-sm transition-colors flex items-center gap-1.5 group">
-                    <span className="w-1 h-1 rounded-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {link.label}
-                  </Link>
+                <li key={link.label}>
+                  {link.booking ? (
+                    <button
+                      type="button"
+                      onClick={openHEBooking}
+                      className="text-white/60 hover:text-teal-400 text-sm transition-colors flex items-center gap-1.5 group"
+                    >
+                      <span className="w-1 h-1 rounded-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {link.label}
+                    </button>
+                  ) : (
+                    <Link href={link.href!}
+                      className="text-white/60 hover:text-teal-400 text-sm transition-colors flex items-center gap-1.5 group">
+                      <span className="w-1 h-1 rounded-full bg-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -100,19 +113,21 @@ export default function Footer() {
             <div className="space-y-4 text-sm text-white/60">
               <div className="flex gap-3">
                 <MapPin className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                <span>123 Lakemba Street<br />Lakemba NSW 2195<br />Australia</span>
+                <span>{contact.address}</span>
               </div>
               <div className="flex gap-3">
                 <Phone className="w-4 h-4 text-teal-400 shrink-0" />
                 <div>
-                  <a href="tel:+61297591234" className="hover:text-white transition-colors block">(02) 9759 1234</a>
-                  <a href="tel:+61297591235" className="hover:text-white transition-colors block">(02) 9759 1235</a>
+                  <a href={toTelHref(contact.phonePrimary)} className="hover:text-white transition-colors block">{contact.phonePrimary}</a>
+                  {contact.phoneSecondary && (
+                    <a href={toTelHref(contact.phoneSecondary)} className="hover:text-white transition-colors block">{contact.phoneSecondary}</a>
+                  )}
                 </div>
               </div>
               <div className="flex gap-3">
                 <Mail className="w-4 h-4 text-teal-400 shrink-0" />
-                <a href="mailto:info@lakembagmp.com.au" className="hover:text-white transition-colors">
-                  info@lakembagmp.com.au
+                <a href={`mailto:${contact.emailPrimary}`} className="hover:text-white transition-colors">
+                  {contact.emailPrimary}
                 </a>
               </div>
               <div className="flex gap-3">
@@ -123,14 +138,6 @@ export default function Footer() {
                   <div className="text-red-400">Sunday: Closed</div>
                 </div>
               </div>
-            </div>
-            {/* Newsletter */}
-            <div className="mt-6">
-              <p className="text-xs text-white/50 mb-2">Subscribe for health tips & updates</p>
-              <form className="flex gap-2" onSubmit={(e) => e.preventDefault()}>
-                <input type="email" placeholder="Your email" className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-teal-400 transition-colors" />
-                <button type="submit" className="px-3 py-2 bg-teal-500 text-white rounded-lg text-sm font-medium hover:bg-teal-400 transition-colors whitespace-nowrap">Subscribe</button>
-              </form>
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X, Bell, FileText } from 'lucide-react'
+import { Save, Globe, Phone, Clock, Share2, Search, ImageIcon, Upload, X, Bell, FileText, Calendar } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { getHomepageSection, adminUploadHomepageImage, adminUpdateHomepageSection, adminUploadLogo, getSetting, getSettings, adminUpdateSettings, adminSendTestEmail, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
@@ -361,6 +361,98 @@ function HeroImageSection() {
   )
 }
 
+const QB_DEFAULTS = {
+  badge_text:       'Book Online Instantly',
+  heading:          'Ready to see a doctor?',
+  description:      'Book your appointment online in seconds using HealthEngine — available 24/7. Same-day appointments often available.',
+  book_button_text: 'Book Online',
+}
+
+function QuickBookingContentSection() {
+  const [fields, setFields] = useState<Record<string, string>>(QB_DEFAULTS)
+  const [saving, setSaving]   = useState(false)
+  const [status, setStatus]   = useState<'idle' | 'saved' | 'error'>('idle')
+
+  useEffect(() => {
+    getHomepageSection('quick_booking')
+      .then(res => {
+        const m = (res.data?.metadata ?? {}) as Record<string, string>
+        setFields({
+          badge_text:       m.badge_text       || QB_DEFAULTS.badge_text,
+          heading:          m.heading          || QB_DEFAULTS.heading,
+          description:      m.description      || QB_DEFAULTS.description,
+          book_button_text: m.book_button_text || QB_DEFAULTS.book_button_text,
+        })
+      })
+      .catch(() => {})
+  }, [])
+
+  const set = (key: string, val: string) => setFields(f => ({ ...f, [key]: val }))
+
+  const handleSave = async () => {
+    setSaving(true)
+    setStatus('idle')
+    try {
+      await adminUpdateHomepageSection('quick_booking', { metadata: fields })
+      bustCache('/homepage/quick_booking')
+      setStatus('saved')
+      setTimeout(() => setStatus('idle'), 3000)
+    } catch {
+      setStatus('error')
+      setTimeout(() => setStatus('idle'), 4000)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <AnimatedSection>
+      <div className="card overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-medical-soft flex-wrap gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary-800 flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="font-bold text-primary-900">Book Online Banner</h3>
+          </div>
+          <div className="flex items-center gap-3">
+            {status === 'saved' && <span className="text-sm text-teal-600 font-medium">Saved!</span>}
+            {status === 'error' && <span className="text-sm text-red-500 font-medium">Save failed.</span>}
+            <button onClick={handleSave} disabled={saving} className="btn-teal disabled:opacity-50 disabled:cursor-not-allowed">
+              {saving
+                ? <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                : <Save className="w-4 h-4" />}
+              {saving ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6 grid sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2">
+            <label className="label">Badge Text</label>
+            <input className="input" placeholder="Book Online Instantly" value={fields.badge_text} onChange={e => set('badge_text', e.target.value)} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">Heading</label>
+            <input className="input" placeholder="Ready to see a doctor?" value={fields.heading} onChange={e => set('heading', e.target.value)} />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">Description</label>
+            <textarea className="input h-20 resize-none" value={fields.description} onChange={e => set('description', e.target.value)} />
+          </div>
+          <div>
+            <label className="label">Book Button Text</label>
+            <input className="input" placeholder="Book Online" value={fields.book_button_text} onChange={e => set('book_button_text', e.target.value)} />
+          </div>
+          <div className="sm:col-span-2 rounded-lg bg-blue-50 border border-blue-100 px-4 py-3 text-xs text-blue-700">
+            The <span className="font-semibold">Open Today hours</span>, <span className="font-semibold">Phone</span>, and <span className="font-semibold">Location</span> shown in this banner are pulled from <span className="font-semibold">Hero Section Text</span> above — edit them there.
+          </div>
+        </div>
+      </div>
+    </AnimatedSection>
+  )
+}
+
 const HERO_DEFAULTS = {
   clinic_name:         'Lakemba General Medical Practice',
   tagline_prefix:      'Healthcare for',
@@ -575,6 +667,7 @@ export default function AdminSettingsPage() {
       <LogoUploadSection />
       <HeroImageSection />
       <HeroContentSection />
+      <QuickBookingContentSection />
 
       {SECTIONS.map((section, si) => {
         const Icon = section.icon

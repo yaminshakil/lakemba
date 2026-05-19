@@ -4,6 +4,19 @@ import { Phone, AlertTriangle, Clock, Heart, MapPin, CheckCircle2 } from 'lucide
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { toTelHref } from '@/lib/utils'
+
+async function fetchPhone(): Promise<string> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/settings/phone_primary`,
+      { next: { revalidate: 1800 } }
+    )
+    if (!res.ok) return '(02) 9759 1234'
+    const json = await res.json()
+    return json.data?.value || '(02) 9759 1234'
+  } catch { return '(02) 9759 1234' }
+}
 
 export const metadata: Metadata = {
   title: 'Emergency & After-Hours Care | Lakemba General Medical Practice',

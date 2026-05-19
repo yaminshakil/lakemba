@@ -1,12 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, X, Phone } from 'lucide-react'
+import { useContactSettings } from '@/hooks/useContactSettings'
+import { toTelHref, openHEBooking } from '@/lib/utils'
 
 export default function StickyBooking() {
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible]   = useState(false)
   const [expanded, setExpanded] = useState(false)
+  const contact = useContactSettings()
 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400)
@@ -34,14 +36,14 @@ export default function StickyBooking() {
               >
                 <p className="text-sm font-semibold text-primary-900 mb-3">Quick Contact</p>
                 <div className="flex flex-col gap-2">
-                  <Link href="/booking"
-                    className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-500 transition-colors"
-                    onClick={() => setExpanded(false)}>
+                  <button
+                    onClick={() => { openHEBooking(); setExpanded(false) }}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl text-sm font-semibold hover:bg-teal-500 transition-colors">
                     <Calendar className="w-4 h-4" /> Book Appointment
-                  </Link>
-                  <a href="tel:+61297591234"
+                  </button>
+                  <a href={toTelHref(contact.phonePrimary)}
                     className="flex items-center gap-2 px-4 py-2.5 bg-primary-800 text-white rounded-xl text-sm font-semibold hover:bg-primary-700 transition-colors">
-                    <Phone className="w-4 h-4" /> (02) 9759 1234
+                    <Phone className="w-4 h-4" /> {contact.phonePrimary}
                   </a>
                 </div>
               </motion.div>

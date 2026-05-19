@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Phone, Menu, X, ChevronDown, Calendar } from 'lucide-react'
-import { cn, getImageUrl } from '@/lib/utils'
+import { cn, getImageUrl, openHEBooking, toTelHref } from '@/lib/utils'
 import { getSetting } from '@/lib/api'
+import { useContactSettings } from '@/hooks/useContactSettings'
 
 type NavItem = { label: string; href: string; children?: { label: string; href: string }[] }
 
@@ -24,6 +25,7 @@ export default function Header() {
   const [openMobileSection, setSection] = useState<string | null>(null)
   const [logoUrl, setLogoUrl]           = useState<string | null>(null)
   const pathname = usePathname()
+  const contact  = useContactSettings()
 
   useEffect(() => { setMenuOpen(false); setDropdown(null); setSection(null) }, [pathname])
 
@@ -53,7 +55,7 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1.5">
                 <Phone className="w-3 h-3 shrink-0" />
-                <a href="tel:+61297591234" className="hover:text-white/80 font-medium">(02) 9759 1234</a>
+                <a href={toTelHref(contact.phonePrimary)} className="hover:text-white/80 font-medium">{contact.phonePrimary}</a>
               </span>
               <span className="hidden sm:block text-white/80">
                 Mon – Fri: 8:30am – 6:00pm &nbsp;|&nbsp; Sat: 9:00am – 1:00pm
@@ -65,10 +67,11 @@ export default function Header() {
                 <span className="w-1.5 h-1.5 rounded-full bg-red-300 animate-pulse" />
                 Emergency Info
               </Link>
-              <Link href="/booking"
+              <button
+                onClick={openHEBooking}
                 className="px-3 py-1 bg-teal-500 text-white rounded-full font-semibold hover:bg-teal-400 transition-colors">
                 Book Online
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -142,17 +145,19 @@ export default function Header() {
 
           {/* Right side: Book CTA + hamburger */}
           <div className="flex items-center gap-3">
-            <Link href="/booking"
+            <button
+              type="button"
+              onClick={openHEBooking}
               className="hidden md:flex items-center gap-2 px-4 py-2.5 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-all duration-200 shadow-md shrink-0">
               <Calendar className="w-4 h-4" />
               Book Appointment
-            </Link>
+            </button>
             <button
               onClick={() => setMenuOpen(prev => !prev)}
               className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
               aria-label="Toggle menu"
             >
-              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {menuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
             </button>
           </div>
         </div>
@@ -214,10 +219,12 @@ export default function Header() {
               ))}
 
               <div className="pt-3 mt-2 border-t border-gray-100 flex flex-col gap-2">
-                <Link href="/booking"
+                <button
+                  type="button"
+                  onClick={openHEBooking}
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white rounded-xl text-sm font-semibold hover:bg-primary-600 transition-colors">
                   <Calendar className="w-4 h-4" /> Book Appointment
-                </Link>
+                </button>
                 <Link href="/emergency"
                   className="flex items-center gap-2 px-4 py-3 text-sm text-red-600 font-semibold hover:bg-red-50 rounded-xl transition-colors">
                   <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Emergency Information

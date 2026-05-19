@@ -1,10 +1,10 @@
 'use client'
-import { CheckCircle2, CreditCard, Clock, Phone, Shield, AlertCircle, ChevronRight, DollarSign, Heart } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { CheckCircle2, CreditCard, Clock, Phone, Shield, AlertCircle, DollarSign, Heart } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
-import { useApi } from '@/hooks/useApi'
 import { getFeesSettings } from '@/lib/api'
 
 type FeeRow = { service: string; fee: string; concession_fee: string; notes: string }
@@ -32,7 +32,15 @@ const PAYMENT_ICONS: Record<string, string> = {
 }
 
 export default function FeesInformationPage() {
-  const { data: fees, loading } = useApi<FeesData>(() => getFeesSettings() as any, [])
+  const [fees, setFees] = useState<FeesData | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    getFeesSettings()
+      .then((res: any) => setFees(res.data?.data ?? null))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   return (
     <>

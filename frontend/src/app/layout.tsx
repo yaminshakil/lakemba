@@ -4,6 +4,7 @@ import { Bitter, Source_Sans_3, Playfair_Display } from 'next/font/google'
 import { ThemeProvider } from 'next-themes'
 import { AuthProvider } from '@/context/AuthContext'
 import BackToTop from '@/components/ui/BackToTop'
+import HealthEngineTrigger from '@/components/booking/HealthEngineTrigger'
 import './globals.css'
 
 const bitter = Bitter({
@@ -31,6 +32,8 @@ const playfair = Playfair_Display({
 })
 
 const SITE_URL = 'https://lakembagmp.com.au'
+// Derive API origin for DNS prefetch (strips /api suffix)
+const API_ORIGIN = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/api\/?$/, '')
 const SITE_NAME = 'Lakemba General Medical Practice'
 const OG_IMAGE = `${SITE_URL}/og-image.jpg`
 
@@ -150,6 +153,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="theme-color" content="#1B72B5" />
+        {API_ORIGIN && <link rel="dns-prefetch" href={API_ORIGIN} />}
+        {API_ORIGIN && <link rel="preconnect" href={API_ORIGIN} crossOrigin="anonymous" />}
         <Script
           id="schema-org"
           type="application/ld+json"
@@ -161,6 +166,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AuthProvider>
             {children}
             <BackToTop />
+            <HealthEngineTrigger />
           </AuthProvider>
         </ThemeProvider>
       </body>

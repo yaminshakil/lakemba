@@ -17,7 +17,7 @@ export default function WhyChooseUs() {
   return (
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 gap-16 items-center">
+        <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
           {/* Left visual */}
           <AnimatedSection direction="left">
             <div className="relative">
@@ -43,7 +43,7 @@ export default function WhyChooseUs() {
               </div>
 
               {/* Floating badge */}
-              <div className="absolute -bottom-4 -right-4 bg-white rounded-2xl shadow-hover p-4 flex items-center gap-3">
+              <div className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 bg-white rounded-2xl shadow-hover p-3 sm:p-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-[#F2FAE9] flex items-center justify-center">
                   <Shield className="w-5 h-5 text-[#56A135]" />
                 </div>

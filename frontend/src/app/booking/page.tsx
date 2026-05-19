@@ -5,6 +5,19 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import { toTelHref } from '@/lib/utils'
+
+async function fetchPhone(): Promise<string> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/settings/phone_primary`,
+      { next: { revalidate: 1800 } }
+    )
+    if (!res.ok) return '(02) 9759 1234'
+    const json = await res.json()
+    return json.data?.value || '(02) 9759 1234'
+  } catch { return '(02) 9759 1234' }
+}
 
 export const metadata: Metadata = {
   title: 'Book an Appointment | Lakemba General Medical Practice',
@@ -31,7 +44,8 @@ const TIPS = [
   'Telehealth appointments available on request',
 ]
 
-export default function BookingPage() {
+export default async function BookingPage() {
+  const phone = await fetchPhone()
   return (
     <>
       <Header />
@@ -69,18 +83,16 @@ export default function BookingPage() {
                     </div>
                     <div className="p-6 flex flex-col items-center gap-6">
                       <p className="text-gray-600 text-sm text-center max-w-md">
-                        Click the button below to open the HealthEngine booking window and select your preferred doctor, date, and time.
+                        Select your preferred doctor, date, and time using the HealthEngine booking widget below.
                       </p>
                       <HealthEngineWidget
-                        mode="lightbox"
-                        buttonText="Open Booking Calendar"
-                        buttonStyle="teal"
-                        className="text-lg px-10 py-4"
+                        mode="he-button"
+                        className="flex justify-center"
                       />
                       <div className="w-full border-t border-gray-100 pt-4 text-center">
                         <p className="text-xs text-gray-400">Or call us directly during business hours</p>
-                        <a href="tel:+61297591234" className="inline-flex items-center gap-2 mt-2 text-primary-800 font-bold text-lg hover:text-teal-600 transition-colors">
-                          <Phone className="w-5 h-5" /> (02) 9759 1234
+                        <a href={toTelHref(phone)} className="inline-flex items-center gap-2 mt-2 text-primary-800 font-bold text-lg hover:text-teal-600 transition-colors">
+                          <Phone className="w-5 h-5" /> {phone}
                         </a>
                       </div>
                     </div>

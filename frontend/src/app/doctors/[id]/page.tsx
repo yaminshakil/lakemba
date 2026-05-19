@@ -52,18 +52,18 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <Link href="/doctors" className="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm mb-8 transition-colors">
               <ArrowLeft className="w-4 h-4" /> Back to Our Doctors
             </Link>
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-36 h-36 rounded-3xl bg-gradient-to-br from-teal-400 to-primary-600 flex items-center justify-center text-4xl font-bold text-white overflow-hidden shadow-primary shrink-0"
+                className="w-24 h-24 sm:w-36 sm:h-36 rounded-3xl bg-gradient-to-br from-teal-400 to-primary-600 flex items-center justify-center text-2xl sm:text-4xl font-bold text-white overflow-hidden shadow-primary shrink-0"
               >
                 {doctor.image
                   ? <Image src={getImageUrl(doctor.image)} alt={doctor.name} width={144} height={144} className="object-cover w-full h-full" />
-                  : doctor.name.split(' ').slice(1).map(n => n[0]).join('')
+                  : (doctor.name || '').split(' ').slice(1).map(n => n[0]).join('')
                 }
               </motion.div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/15 rounded-full text-teal-200 text-xs font-semibold mb-3">
                   <Star className="w-3.5 h-3.5 text-amber-300 fill-amber-300" /> {doctor.experience_years}+ Years Experience
                 </div>
@@ -71,8 +71,8 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
                 <p className="text-teal-300 font-semibold mb-1">{doctor.qualifications}</p>
                 <p className="text-white/70">{doctor.specialty}</p>
               </div>
-              <div className="md:ml-auto">
-                <HealthEngineWidget mode="lightbox" buttonText="Book with Dr." buttonStyle="teal" className="text-base px-8 py-3.5" />
+              <div className="w-full sm:w-auto sm:ml-auto">
+                <HealthEngineWidget mode="lightbox" buttonText="Book with Dr." buttonStyle="teal" className="w-full sm:w-auto justify-center text-base px-8 py-3.5" />
               </div>
             </div>
           </div>
@@ -85,7 +85,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
               <div className="lg:col-span-2 space-y-8">
                 <AnimatedSection>
                   <div className="card p-8">
-                    <h2 className="font-bold text-primary-900 text-xl mb-4">About Dr. {doctor.name.split(' ').slice(-1)[0]}</h2>
+                    <h2 className="font-bold text-primary-900 text-xl mb-4">About Dr. {(doctor.name || '').split(' ').slice(-1)[0]}</h2>
                     <p className="text-gray-600 leading-relaxed">{doctor.biography || 'Biography coming soon.'}</p>
                   </div>
                 </AnimatedSection>
@@ -119,7 +119,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
                         <div>
                           <p className="text-xs text-gray-400">Languages</p>
                           <div className="flex flex-wrap gap-1 mt-0.5">
-                            {doctor.languages.map(l => <span key={l} className="badge bg-purple-50 text-purple-700 text-xs">{l}</span>)}
+                            {(doctor.languages || []).map(l => <span key={l} className="badge bg-purple-50 text-purple-700 text-xs">{l}</span>)}
                           </div>
                         </div>
                       </div>
@@ -135,10 +135,10 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
                     <div className="grid grid-cols-7 gap-1">
                       {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((d, idx) => {
                         const fullDay = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][idx]
-                        const active = doctor.available_days.includes(fullDay)
+                        const active = (doctor.available_days || []).includes(fullDay)
                         return (
-                          <div key={d} className={`flex flex-col items-center py-2 rounded-lg text-xs font-bold ${active ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-300'}`}>
-                            {d[0]}
+                          <div key={d} className={`flex flex-col items-center py-1.5 sm:py-2 rounded-lg font-bold ${active ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-300'}`}>
+                            <span className="text-[10px] sm:text-xs">{d[0]}</span>
                           </div>
                         )
                       })}
