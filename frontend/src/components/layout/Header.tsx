@@ -108,7 +108,7 @@ export default function Header() {
                 <Link
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                    'flex items-center gap-1 px-3 py-2 rounded-lg text-base font-medium transition-all duration-200',
                     pathname === item.href
                       ? 'text-primary-500 bg-medical-light'
                       : 'text-gray-800 hover:text-primary-500 hover:bg-medical-light'
@@ -180,7 +180,7 @@ export default function Header() {
                     <Link
                       href={item.href}
                       className={cn(
-                        'flex-1 block px-4 py-3 rounded-xl text-sm font-medium transition-colors',
+                        'flex-1 block px-4 py-3 rounded-xl text-base font-medium transition-colors',
                         pathname === item.href ? 'bg-medical-light text-primary-500' : 'text-gray-800 hover:bg-gray-50'
                       )}
                     >
