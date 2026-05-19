@@ -402,13 +402,16 @@ function ServicesImageSection() {
     try {
       const fd = new FormData()
       fd.append('image', file)
-      const res = await adminUploadHomepageImage('services', fd)
-      const url = res.data?.data?.image_url
-      setCurrentImage(url ?? null)
+      await adminUploadHomepageImage('services', fd)
+      // Bust cache then re-fetch so the preview uses getImageUrl (correct port/domain)
+      // rather than the APP_URL-derived image_url from the backend response
+      bustCache('/homepage/services')
+      const fresh = await getHomepageSection('services')
+      const img = fresh.data?.metadata?.image as string | undefined
+      setCurrentImage(img ? getImageUrl(img) : null)
       setPreview(null)
       setFile(null)
       setStatus('saved')
-      bustCache('/homepage/services')
       if (inputRef.current) inputRef.current.value = ''
     } catch (err: any) {
       const msg =
