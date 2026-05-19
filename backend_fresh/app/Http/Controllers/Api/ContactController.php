@@ -74,9 +74,9 @@ class ContactController extends Controller
     public function update(Request $request)
     {
         $data = $request->validate([
-            'phone'          => 'sometimes|string|max:20',
+            'phone_primary'  => 'sometimes|string|max:20',
             'phone_secondary'=> 'nullable|string|max:20',
-            'email'          => 'sometimes|email|max:200',
+            'email_primary'  => 'sometimes|email|max:200',
             'address'        => 'sometimes|string|max:300',
             'suburb'         => 'sometimes|string|max:100',
             'state'          => 'sometimes|string|max:50',
@@ -84,7 +84,7 @@ class ContactController extends Controller
         ]);
 
         foreach ($data as $key => $value) {
-            Setting::set("contact_{$key}", $value, 'contact');
+            Setting::set($key, $value, 'contact');
         }
 
         return response()->json(['message' => 'Contact details updated successfully.']);

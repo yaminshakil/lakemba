@@ -51,7 +51,7 @@ class AboutController extends Controller
         $request->validate(['image' => 'required|image|mimes:jpeg,png,gif,webp|max:4096']);
 
         $settings = AboutSettings::first();
-        if ($settings?->clinic_image_url) {
+        if ($settings?->clinic_image_url && Storage::disk('public')->exists($settings->clinic_image_url)) {
             Storage::disk('public')->delete($settings->clinic_image_url);
         }
 

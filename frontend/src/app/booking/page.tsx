@@ -7,16 +7,30 @@ import HealthEngineWidget from '@/components/booking/HealthEngineWidget'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { toTelHref } from '@/lib/utils'
 
-async function fetchPhone(): Promise<string> {
+type ContactInfo = { phone: string; address: string; suburb: string; state: string; postcode: string; opening_hours: { day: string; open: string | null; close: string | null; is_closed: boolean }[] }
+
+async function fetchContact(): Promise<ContactInfo> {
+  const DEFAULTS: ContactInfo = {
+    phone: '(02) 9759 1234',
+    address: '21 Haldon St',
+    suburb: 'Lakemba',
+    state: 'NSW',
+    postcode: '2195',
+    opening_hours: [
+      { day: 'Monday – Friday', open: '8:30am', close: '6:00pm', is_closed: false },
+      { day: 'Saturday',        open: '9:00am', close: '1:00pm', is_closed: false },
+      { day: 'Sunday',          open: null,     close: null,     is_closed: true  },
+    ],
+  }
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/settings/phone_primary`,
+      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/contact`,
       { next: { revalidate: 1800 } }
     )
-    if (!res.ok) return '(02) 9759 1234'
+    if (!res.ok) return DEFAULTS
     const json = await res.json()
-    return json.data?.value || '(02) 9759 1234'
-  } catch { return '(02) 9759 1234' }
+    return { ...DEFAULTS, ...json.data }
+  } catch { return DEFAULTS }
 }
 
 export const metadata: Metadata = {
@@ -45,7 +59,9 @@ const TIPS = [
 ]
 
 export default async function BookingPage() {
-  const phone = await fetchPhone()
+  const contact = await fetchContact()
+  const { phone, address, suburb, state, postcode, opening_hours } = contact
+  const fullAddress = `${address}, ${suburb} ${state} ${postcode}`
   return (
     <>
       <Header />
@@ -107,16 +123,15 @@ export default async function BookingPage() {
                     <h3 className="font-bold text-primary-900 mb-4 flex items-center gap-2">
                       <Clock className="w-5 h-5 text-teal-500" /> Opening Hours
                     </h3>
-                    {[
-                      { day: 'Monday – Friday', time: '8:30am – 6:00pm' },
-                      { day: 'Saturday',        time: '9:00am – 1:00pm' },
-                      { day: 'Sunday',          time: 'Closed' },
-                    ].map(({ day, time }) => (
-                      <div key={day} className="flex justify-between py-2 border-b border-gray-50 last:border-0 text-sm">
-                        <span className="text-gray-600">{day}</span>
-                        <span className={`font-semibold ${time === 'Closed' ? 'text-red-500' : 'text-primary-800'}`}>{time}</span>
-                      </div>
-                    ))}
+                    {opening_hours.map(({ day, open, close, is_closed }) => {
+                      const time = is_closed ? 'Closed' : `${open} – ${close}`
+                      return (
+                        <div key={day} className="flex justify-between py-2 border-b border-gray-50 last:border-0 text-sm">
+                          <span className="text-gray-600">{day}</span>
+                          <span className={`font-semibold ${is_closed ? 'text-red-500' : 'text-primary-800'}`}>{time}</span>
+                        </div>
+                      )
+                    })}
                   </div>
                 </AnimatedSection>
 
@@ -125,8 +140,8 @@ export default async function BookingPage() {
                     <h3 className="font-bold text-primary-900 mb-4 flex items-center gap-2">
                       <MapPin className="w-5 h-5 text-teal-500" /> Location
                     </h3>
-                    <p className="text-gray-600 text-sm mb-3">123 Lakemba Street<br />Lakemba NSW 2195</p>
-                    <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer"
+                    <p className="text-gray-600 text-sm mb-3">{fullAddress}</p>
+                    <a href={`https://maps.google.com/?q=${encodeURIComponent(fullAddress)}`} target="_blank" rel="noopener noreferrer"
                       className="text-primary-700 text-sm font-medium hover:text-teal-600 transition-colors">
                       Get Directions →
                     </a>

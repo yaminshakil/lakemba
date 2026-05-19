@@ -19,6 +19,13 @@ class Setting extends Model
 
     public static function set(string $key, mixed $value, string $group = 'general'): void
     {
-        static::updateOrCreate(['key' => $key], ['value' => $value, 'group' => $group]);
+        $setting = static::where('key', $key)->first();
+        if ($setting) {
+            $setting->value = $value;
+            $setting->group = $group;
+            $setting->save();
+        } else {
+            static::create(['key' => $key, 'value' => $value, 'group' => $group]);
+        }
     }
 }

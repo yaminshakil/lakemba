@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class HomepageController extends Controller
@@ -49,6 +50,7 @@ class HomepageController extends Controller
                 'title'    => 'Comprehensive Care for Your Whole Family',
                 'subtitle' => 'From preventive care to specialist referrals.',
                 'is_active'=> true,
+                'metadata' => ['image' => ''],
             ],
             [
                 'key'      => 'doctors',
@@ -142,16 +144,28 @@ class HomepageController extends Controller
         $request->validate(['image' => 'required|image|max:4096']);
 
         $oldPath = Setting::get("homepage_{$key}_image");
-        if ($oldPath) {
+        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
             Storage::disk('public')->delete($oldPath);
         }
 
         $path = $request->file('image')->store("homepage/{$key}", 'public');
-        Setting::set("homepage_{$key}_image", $path, 'homepage');
+
+        if (!$path) {
+            return response()->json(['message' => 'Failed to store image file'], 500);
+        }
+
+        try {
+            Setting::set("homepage_{$key}_image", $path, 'homepage');
+            Log::info("Homepage image saved", ['key' => $key, 'path' => $path]);
+        } catch (\Throwable $e) {
+            Log::error("Failed to save homepage image setting", ['key' => $key, 'path' => $path, 'error' => $e->getMessage()]);
+            return response()->json(['message' => 'Image stored but setting save failed: ' . $e->getMessage()], 500);
+        }
 
         return response()->json([
             'data' => [
                 'image_url' => Storage::disk('public')->url($path),
+                'path'      => $path,
             ]
         ]);
     }

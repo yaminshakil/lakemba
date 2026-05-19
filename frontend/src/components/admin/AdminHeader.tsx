@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Bell, ExternalLink, Menu } from 'lucide-react'
+import { ExternalLink, Menu } from 'lucide-react'
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin':              'Dashboard',
@@ -53,10 +53,6 @@ export default function AdminHeader({ onMenuOpen }: AdminHeaderProps) {
           aria-label="View site">
           <ExternalLink className="w-4 h-4" />
         </Link>
-        <button className="relative w-9 h-9 rounded-lg border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors">
-          <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-teal-500" />
-        </button>
       </div>
     </header>
   )

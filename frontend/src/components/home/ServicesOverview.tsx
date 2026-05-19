@@ -37,17 +37,9 @@ export default function ServicesOverview() {
     api.get('/homepage/services')
       .then(res => {
         const img = res.data?.data?.metadata?.image as string | undefined
-        console.log('[ServicesOverview] section response:', res.data)
-        console.log('[ServicesOverview] image path from API:', img)
-        if (img) {
-          const url = getImageUrl(img)
-          console.log('[ServicesOverview] resolved image URL:', url)
-          setBgImage(url)
-        }
+        if (img) setBgImage(getImageUrl(img))
       })
-      .catch(err => {
-        console.error('[ServicesOverview] failed to fetch section:', err)
-      })
+      .catch(() => {})
   }, [])
 
   const sectionRef = useRef<HTMLElement>(null)
@@ -55,8 +47,7 @@ export default function ServicesOverview() {
     target: sectionRef,
     offset: ['start end', 'end start'],
   })
-  // Image moves at 40% of scroll speed — classic parallax feel
-  const bgY = useTransform(scrollYProgress, [0, 1], ['-12%', '12%'])
+  const bgY = useTransform(scrollYProgress, [0, 1], ['-28%', '28%'])
 
   const services = (() => {
     if (!data || data.length === 0) return DEFAULT_SERVICES
@@ -71,7 +62,7 @@ export default function ServicesOverview() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
         <motion.div
           className="absolute inset-x-0"
-          style={{ top: '-15%', bottom: '-15%', y: bgY }}
+          style={{ top: '-32%', bottom: '-32%', y: bgY }}
         >
           {bgImage ? (
             // eslint-disable-next-line @next/next/no-img-element

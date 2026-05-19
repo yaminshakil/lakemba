@@ -108,7 +108,7 @@ class SettingController extends Controller
         $request->validate(['logo' => 'required|image|mimes:jpeg,png,gif,svg,webp|max:2048']);
 
         $oldPath = Setting::get('site_logo');
-        if ($oldPath) {
+        if ($oldPath && Storage::disk('public')->exists($oldPath)) {
             Storage::disk('public')->delete($oldPath);
         }
 
