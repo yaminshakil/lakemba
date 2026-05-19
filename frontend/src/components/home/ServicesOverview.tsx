@@ -1,12 +1,13 @@
 'use client'
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, Eye, Syringe, Clipboard, Users, Microscope, Thermometer, ArrowRight } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { useApi } from '@/hooks/useApi'
-import { getServices, getHomepageSection } from '@/lib/api'
+import { getServices } from '@/lib/api'
+import api from '@/lib/api'
 import { ServiceCardSkeleton } from '@/components/ui/SkeletonLoader'
 import { getImageUrl } from '@/lib/utils'
 import type { Service } from '@/types'
@@ -29,7 +30,17 @@ const DEFAULT_SERVICES = [
 
 export default function ServicesOverview() {
   const { data } = useApi(() => getServices())
-  const { data: section, loading: sectionLoading } = useApi(() => getHomepageSection('services'))
+
+  // Direct (non-cached) fetch so admin image changes appear immediately
+  const [bgImage, setBgImage] = useState<string | null>(null)
+  useEffect(() => {
+    api.get('/homepage/services')
+      .then(res => {
+        const img = res.data?.data?.metadata?.image as string | undefined
+        if (img) setBgImage(getImageUrl(img))
+      })
+      .catch(() => {})
+  }, [])
 
   const sectionRef = useRef<HTMLElement>(null)
   const { scrollYProgress } = useScroll({
@@ -38,10 +49,6 @@ export default function ServicesOverview() {
   })
   // Image moves at 40% of scroll speed — classic parallax feel
   const bgY = useTransform(scrollYProgress, [0, 1], ['-12%', '12%'])
-
-  const bgImage = !sectionLoading && section?.metadata?.image
-    ? getImageUrl(section.metadata.image as string)
-    : null
 
   const services = (() => {
     if (!data || data.length === 0) return DEFAULT_SERVICES
