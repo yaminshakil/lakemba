@@ -37,9 +37,17 @@ export default function ServicesOverview() {
     api.get('/homepage/services')
       .then(res => {
         const img = res.data?.data?.metadata?.image as string | undefined
-        if (img) setBgImage(getImageUrl(img))
+        console.log('[ServicesOverview] section response:', res.data)
+        console.log('[ServicesOverview] image path from API:', img)
+        if (img) {
+          const url = getImageUrl(img)
+          console.log('[ServicesOverview] resolved image URL:', url)
+          setBgImage(url)
+        }
       })
-      .catch(() => {})
+      .catch(err => {
+        console.error('[ServicesOverview] failed to fetch section:', err)
+      })
   }, [])
 
   const sectionRef = useRef<HTMLElement>(null)
@@ -71,16 +79,17 @@ export default function ServicesOverview() {
               src={bgImage}
               alt=""
               className="w-full h-full object-cover"
+              onError={() => { console.warn('[ServicesOverview] image failed to load:', bgImage); setBgImage(null) }}
             />
           ) : (
-            // Fallback gradient when no image is uploaded
+            // Fallback gradient when no image is uploaded or image fails to load
             <div className="w-full h-full bg-hero-gradient" />
           )}
         </motion.div>
       </div>
 
       {/* Dark overlay for card readability */}
-      <div className="absolute inset-0 bg-primary-950/78 pointer-events-none" aria-hidden />
+      <div className="absolute inset-0 bg-primary-900/60 pointer-events-none" aria-hidden />
 
       {/* ── Content ── */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
