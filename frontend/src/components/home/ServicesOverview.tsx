@@ -1,12 +1,14 @@
 'use client'
+import { useRef } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
+import { motion, useScroll, useTransform } from 'framer-motion'
 import { Heart, Brain, Baby, Stethoscope, Activity, Shield, Pill, Zap, Eye, Syringe, Clipboard, Users, Microscope, Thermometer, ArrowRight } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { useApi } from '@/hooks/useApi'
-import { getServices } from '@/lib/api'
+import { getServices, getHomepageSection } from '@/lib/api'
 import { ServiceCardSkeleton } from '@/components/ui/SkeletonLoader'
+import { getImageUrl } from '@/lib/utils'
 import type { Service } from '@/types'
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -26,7 +28,20 @@ const DEFAULT_SERVICES = [
 ] as Service[]
 
 export default function ServicesOverview() {
-  const { data, loading } = useApi(() => getServices())
+  const { data } = useApi(() => getServices())
+  const { data: section, loading: sectionLoading } = useApi(() => getHomepageSection('services'))
+
+  const sectionRef = useRef<HTMLElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start'],
+  })
+  // Image moves at 40% of scroll speed — classic parallax feel
+  const bgY = useTransform(scrollYProgress, [0, 1], ['-12%', '12%'])
+
+  const bgImage = !sectionLoading && section?.metadata?.image
+    ? getImageUrl(section.metadata.image as string)
+    : null
 
   const services = (() => {
     if (!data || data.length === 0) return DEFAULT_SERVICES
@@ -35,8 +50,33 @@ export default function ServicesOverview() {
   })()
 
   return (
-    <section className="py-20 bg-hero-gradient relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section ref={sectionRef} className="py-20 relative overflow-hidden">
+
+      {/* ── Parallax background layer ── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden>
+        <motion.div
+          className="absolute inset-x-0"
+          style={{ top: '-15%', bottom: '-15%', y: bgY }}
+        >
+          {bgImage ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={bgImage}
+              alt=""
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            // Fallback gradient when no image is uploaded
+            <div className="w-full h-full bg-hero-gradient" />
+          )}
+        </motion.div>
+      </div>
+
+      {/* Dark overlay for card readability */}
+      <div className="absolute inset-0 bg-primary-950/78 pointer-events-none" aria-hidden />
+
+      {/* ── Content ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
           badge="Our Services"
           title="Comprehensive Care for Your Whole Family"
@@ -45,7 +85,7 @@ export default function ServicesOverview() {
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {loading
+          {!data
             ? Array.from({ length: 6 }).map((_, i) => <ServiceCardSkeleton key={i} />)
             : services.map((service, i) => {
                 const Icon = ICON_MAP[service.icon] || Stethoscope
