@@ -158,7 +158,7 @@ export default async function ServicesPage() {
                   <p className="text-white/80 mb-6 max-w-lg mx-auto">We offer a wide range of healthcare services. Contact us to find out how we can help you.</p>
                   <div className="flex flex-wrap justify-center gap-4">
                     <HealthEngineWidget mode="lightbox" buttonText="Book a Consultation" buttonStyle="white" />
-                    <a href="tel:+61297591234" className="inline-flex items-center gap-2 px-6 py-3 bg-white/15 text-white rounded-xl font-semibold border border-white/25 hover:bg-white/25 transition-all">
+                    <a href="tel:+61272651000" className="inline-flex items-center gap-2 px-6 py-3 bg-white/15 text-white rounded-xl font-semibold border border-white/25 hover:bg-white/25 transition-all">
                       Call Us
                     </a>
                   </div>

@@ -98,7 +98,7 @@ const jsonLd = {
   image: OG_IMAGE,
   description:
     'Compassionate, patient-centred general practice in Lakemba, NSW. Bulk billing for eligible patients. Online bookings available.',
-  telephone: '(02) 9759 1234',
+  telephone: '02 7265 1000',
   email: 'info@lakembagmp.com.au',
   address: {
     '@type': 'PostalAddress',

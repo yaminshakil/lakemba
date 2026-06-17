@@ -13,8 +13,8 @@ const SECTIONS = [
     icon: Phone,
     title: 'Contact Information',
     fields: [
-      { key: 'phone_primary',   label: 'Primary Phone',   type: 'tel',  placeholder: '(02) 9759 1234' },
-      { key: 'phone_secondary', label: 'Fax Number',        type: 'tel',  placeholder: '(02) 9759 1235' },
+      { key: 'phone_primary',   label: 'Primary Phone',   type: 'tel',  placeholder: '02 7265 1000' },
+      { key: 'phone_secondary', label: 'Fax Number',        type: 'tel',  placeholder: '02 7265 1001' },
       { key: 'email_primary',   label: 'Primary Email',   type: 'email',placeholder: 'info@lakembagmp.com.au' },
       { key: 'address',         label: 'Street Address',  type: 'text', placeholder: '18 The Boulevarde' },
       { key: 'suburb',          label: 'Suburb',          type: 'text', placeholder: 'Lakemba' },

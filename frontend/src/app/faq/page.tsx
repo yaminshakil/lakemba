@@ -13,7 +13,7 @@ import type { Faq } from '@/types'
 
 const DEFAULT_FAQS: Faq[] = [
   { id: 1,  question: 'Do you offer bulk billing?',                       answer: 'Yes. Bulk billing is available for eligible Medicare patients including concession card holders, children under 16, and patients over 65. Please call reception to confirm your eligibility.', category: 'Billing', order: 1 },
-  { id: 2,  question: 'How do I book an appointment?',                    answer: 'You can book online 24/7 via HealthEngine, call us at (02) 9759 1234 during business hours, or walk in. Same-day appointments are often available for urgent issues.', category: 'Appointments', order: 2 },
+  { id: 2,  question: 'How do I book an appointment?',                    answer: 'You can book online 24/7 via HealthEngine, call us at 02 7265 1000 during business hours, or walk in. Same-day appointments are often available for urgent issues.', category: 'Appointments', order: 2 },
   { id: 3,  question: 'What should I bring to my first appointment?',     answer: 'Please bring your Medicare card, any concession or healthcare cards, a list of current medications, any referral letters, and previous test results or medical records if available.', category: 'Appointments', order: 3 },
   { id: 4,  question: 'Do you speak languages other than English?',       answer: 'Yes! Our team speaks Arabic, Mandarin, Cantonese, Vietnamese, and French. For other languages, we can arrange an interpreter.', category: 'General', order: 4 },
   { id: 5,  question: 'What happens if I need care after hours?',         answer: 'For non-emergencies after hours, call 13 SICK (13 7425) for a home doctor. For emergencies, call 000 or go to your nearest ED.', category: 'General', order: 5 },
@@ -103,7 +103,7 @@ export default function FAQPage() {
               <p className="text-gray-500 mb-5">We&apos;re happy to help. Contact us or book an appointment to discuss your concerns.</p>
               <div className="flex flex-wrap justify-center gap-3">
                 <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" />
-                <a href="tel:+61297591234" className="btn-outline">Call (02) 9759 1234</a>
+                <a href="tel:+61272651000" className="btn-outline">Call 02 7265 1000</a>
               </div>
             </AnimatedSection>
           </div>

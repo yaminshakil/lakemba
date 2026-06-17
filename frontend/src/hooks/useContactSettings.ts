@@ -18,8 +18,8 @@ export interface ContactSettings {
 }
 
 const DEFAULTS: ContactSettings = {
-  phonePrimary:   '(02) 9759 1234',
-  phoneSecondary: '(02) 9759 1235',
+  phonePrimary:   '02 7265 1000',
+  phoneSecondary: '',
   emailPrimary:   'info@lakembagmp.com.au',
   address:        '21 Haldon St, Lakemba NSW 2195',
   suburb:         'Lakemba',

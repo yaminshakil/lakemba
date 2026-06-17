@@ -81,10 +81,10 @@ export default function NotFound() {
 
           {/* Emergency help */}
           <div className="mt-10">
-            <a href="tel:+61297591234"
+            <a href="tel:+61272651000"
               className="inline-flex items-center gap-2 text-white/50 hover:text-white text-sm transition-colors">
               <Phone className="w-4 h-4" />
-              Need urgent help? Call&nbsp;<span className="font-semibold text-white/70">(02) 9759 1234</span>
+              Need urgent help? Call&nbsp;<span className="font-semibold text-white/70">02 7265 1000</span>
             </a>
           </div>
 

@@ -264,7 +264,7 @@ export default function FeesInformationPage() {
                 <p className="text-gray-500 mb-6">Our friendly reception team is happy to help with any billing or fee enquiries.</p>
                 <div className="flex flex-wrap justify-center gap-3">
                   <HealthEngineWidget mode="lightbox" buttonText="Book an Appointment" />
-                  <a href="tel:+61297591234" className="btn-outline inline-flex items-center gap-2">
+                  <a href="tel:+61272651000" className="btn-outline inline-flex items-center gap-2">
                     <Phone className="w-4 h-4" /> Call Us
                   </a>
                 </div>

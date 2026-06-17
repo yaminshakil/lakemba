@@ -61,7 +61,7 @@ export default function EmergencyPage() {
                     { label: 'Poisons Information Centre', number: '13 11 26', color: 'bg-purple-50 border-purple-200 text-purple-700' },
                     { label: 'Mental Health Crisis Line', number: '1800 011 511', color: 'bg-blue-50 border-blue-200 text-blue-700' },
                     { label: 'Lifeline (24/7 crisis support)', number: '13 11 14', color: 'bg-green-50 border-green-200 text-green-700' },
-                    { label: 'Our Practice', number: '(02) 9759 1234', color: 'bg-primary-50 border-primary-200 text-primary-700' },
+                    { label: 'Our Practice', number: '02 7265 1000', color: 'bg-primary-50 border-primary-200 text-primary-700' },
                   ].map(({ label, number, color }) => (
                     <div key={label} className={`flex items-center justify-between p-4 rounded-xl border ${color}`}>
                       <span className="text-sm font-medium">{label}</span>

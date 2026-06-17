@@ -11,7 +11,7 @@ type ContactInfo = { phone: string; address: string; suburb: string; state: stri
 
 async function fetchContact(): Promise<ContactInfo> {
   const DEFAULTS: ContactInfo = {
-    phone: '(02) 9759 1234',
+    phone: '02 7265 1000',
     address: '21 Haldon St',
     suburb: 'Lakemba',
     state: 'NSW',
