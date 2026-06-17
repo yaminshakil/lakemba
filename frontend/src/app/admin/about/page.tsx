@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Plus, Trash2, Save, Info, ImageIcon, BarChart3, ListChecks, Star, ChevronDown, ChevronUp, Upload, X } from 'lucide-react'
 import Image from 'next/image'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getAboutData, adminUpdateAboutData, adminUploadAboutImage } from '@/lib/api'
+import { getAboutData, adminUpdateAboutData, adminUploadAboutImage, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 
 type Value = { icon: string; title: string; desc: string }
@@ -69,6 +69,7 @@ export default function AdminAboutPage() {
       const fd = new FormData()
       fd.append('image', pendingFile)
       const res: any = await adminUploadAboutImage(fd)
+      bustCache('/about')
       setCurrentImagePath(res.data?.data?.path ?? null)
       setPendingFile(null)
       setPreviewUrl(null)
@@ -84,6 +85,7 @@ export default function AdminAboutPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
+      bustCache('/about')
       await adminUpdateAboutData({
         hero_badge: heroBadge,
         hero_title: heroTitle,

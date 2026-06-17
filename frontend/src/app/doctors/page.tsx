@@ -17,12 +17,12 @@ import { getImageUrl } from '@/lib/utils'
 import type { Doctor } from '@/types'
 
 const FALLBACK: Doctor[] = [
-  { id: 1, name: 'Dr. Sarah Ahmed',       slug: 'sarah-ahmed',       image: '', qualifications: 'MBBS, FRACGP',           specialty: "General Practice & Women's Health",  experience_years: 12, biography: 'Dr. Ahmed has over 12 years of experience and is passionate about women\'s health and preventive care.',         languages: ['English', 'Arabic'],                   available_days: ['Mon','Tue','Wed','Thu','Fri'], is_featured: true, order: 1 },
-  { id: 2, name: 'Dr. Michael Chen',       slug: 'michael-chen',      image: '', qualifications: 'MBBS, DCH, FRACGP',      specialty: 'Paediatrics & Chronic Disease',       experience_years: 9,  biography: 'Dr. Chen specialises in paediatric care and chronic disease management.',                                       languages: ['English', 'Mandarin', 'Cantonese'],     available_days: ['Mon','Tue','Thu','Fri'],       is_featured: true, order: 2 },
-  { id: 3, name: 'Dr. Fatima Al-Hassan',   slug: 'fatima-al-hassan',  image: '', qualifications: 'MBBS, FRACGP, Dip RACOG',specialty: 'Mental Health & Preventive Care',    experience_years: 8,  biography: 'Dr. Al-Hassan has a strong interest in mental health and preventive medicine.',                                   languages: ['English', 'Arabic', 'French'],          available_days: ['Tue','Wed','Thu','Sat'],       is_featured: true, order: 3 },
-  { id: 4, name: 'Dr. James Nguyen',       slug: 'james-nguyen',      image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Aged Care & Diabetes Management',    experience_years: 15, biography: 'Dr. Nguyen brings 15+ years of experience in aged care and diabetes management.',                              languages: ['English', 'Vietnamese'],               available_days: ['Mon','Wed','Fri'],             is_featured: true, order: 4 },
-  { id: 5, name: 'Dr. Priya Sharma',       slug: 'priya-sharma',      image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Skin Health & Travel Medicine',      experience_years: 7,  biography: 'Dr. Sharma has expertise in dermatology and travel medicine.',                                                  languages: ['English', 'Hindi', 'Punjabi'],          available_days: ['Mon','Tue','Wed','Thu'],       is_featured: false, order: 5 },
-  { id: 6, name: 'Dr. Omar Khalil',        slug: 'omar-khalil',       image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Men\'s Health & Sports Medicine',   experience_years: 10, biography: 'Dr. Khalil focuses on men\'s health and sports medicine.',                                                      languages: ['English', 'Arabic'],                   available_days: ['Tue','Thu','Fri','Sat'],       is_featured: false, order: 6 },
+  { id: 1, name: 'Dr. Sarah Ahmed',       slug: 'sarah-ahmed',       image: '', qualifications: 'MBBS, FRACGP',           specialty: "General Practice & Women's Health",  experience_years: 12, biography: 'Dr. Ahmed has over 12 years of experience and is passionate about women\'s health and preventive care.',         languages: ['English', 'Arabic'],                   available_days: ['Monday','Tuesday','Wednesday','Thursday','Friday'], is_featured: true, order: 1 },
+  { id: 2, name: 'Dr. Michael Chen',       slug: 'michael-chen',      image: '', qualifications: 'MBBS, DCH, FRACGP',      specialty: 'Paediatrics & Chronic Disease',       experience_years: 9,  biography: 'Dr. Chen specialises in paediatric care and chronic disease management.',                                       languages: ['English', 'Mandarin', 'Cantonese'],     available_days: ['Monday','Tuesday','Thursday','Friday'],            is_featured: true, order: 2 },
+  { id: 3, name: 'Dr. Fatima Al-Hassan',   slug: 'fatima-al-hassan',  image: '', qualifications: 'MBBS, FRACGP, Dip RACOG',specialty: 'Mental Health & Preventive Care',    experience_years: 8,  biography: 'Dr. Al-Hassan has a strong interest in mental health and preventive medicine.',                                   languages: ['English', 'Arabic', 'French'],          available_days: ['Tuesday','Wednesday','Thursday','Saturday'],        is_featured: true, order: 3 },
+  { id: 4, name: 'Dr. James Nguyen',       slug: 'james-nguyen',      image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Aged Care & Diabetes Management',    experience_years: 15, biography: 'Dr. Nguyen brings 15+ years of experience in aged care and diabetes management.',                              languages: ['English', 'Vietnamese'],               available_days: ['Monday','Wednesday','Friday'],                      is_featured: true, order: 4 },
+  { id: 5, name: 'Dr. Priya Sharma',       slug: 'priya-sharma',      image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Skin Health & Travel Medicine',      experience_years: 7,  biography: 'Dr. Sharma has expertise in dermatology and travel medicine.',                                                  languages: ['English', 'Hindi', 'Punjabi'],          available_days: ['Monday','Tuesday','Wednesday','Thursday'],          is_featured: false, order: 5 },
+  { id: 6, name: 'Dr. Omar Khalil',        slug: 'omar-khalil',       image: '', qualifications: 'MBBS, FRACGP',           specialty: 'Men\'s Health & Sports Medicine',   experience_years: 10, biography: 'Dr. Khalil focuses on men\'s health and sports medicine.',                                                      languages: ['English', 'Arabic'],                   available_days: ['Tuesday','Thursday','Friday','Saturday'],           is_featured: false, order: 6 },
 ]
 
 const AVATAR_COLORS = ['from-blue-400 to-blue-600','from-teal-400 to-teal-600','from-purple-400 to-purple-600','from-rose-400 to-rose-600','from-orange-400 to-orange-600','from-indigo-400 to-indigo-600']
@@ -91,7 +91,7 @@ export default function DoctorsPage() {
                           <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${AVATAR_COLORS[i % AVATAR_COLORS.length]} flex items-center justify-center text-2xl font-bold text-white overflow-hidden shrink-0`}>
                             {doc.image
                               ? <Image src={getImageUrl(doc.image)} alt={doc.name} width={80} height={80} className="object-cover w-full h-full" />
-                              : doc.name.split(' ').slice(1).map(n => n[0]).join('')
+                              : doc.name.split(' ').filter(n => !/^dr\.?$/i.test(n)).map(n => n[0]).join('').slice(0, 2) || doc.name[0] || '?'
                             }
                           </div>
                           <div>
@@ -138,7 +138,7 @@ export default function DoctorsPage() {
 
                         <div className="mt-auto flex flex-col gap-2">
                           <HealthEngineWidget mode="lightbox" buttonText="Book Appointment" buttonStyle="teal" className="w-full justify-center text-sm py-2.5" />
-                          <Link href={`/doctors/${doc.slug || doc.id}`}
+                          <Link href={`/doctors/${doc.id}`}
                             className="text-center text-primary-700 text-sm font-medium hover:text-teal-600 transition-colors py-1.5">
                             View Full Profile →
                           </Link>

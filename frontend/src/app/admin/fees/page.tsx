@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { Plus, Trash2, Save, DollarSign, Shield, CreditCard, Clock, Phone, Heart, ChevronDown, ChevronUp } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getFeesSettings, adminUpdateFeesSettings } from '@/lib/api'
+import { getFeesSettings, adminUpdateFeesSettings, bustCache } from '@/lib/api'
 
 const ALL_PAYMENT_METHODS = ['Cash', 'EFTPOS', 'Visa', 'Mastercard', 'Amex', 'Cheque', 'Bank Transfer']
 
@@ -49,6 +49,7 @@ export default function AdminFeesPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
+      bustCache('/fees')
       await adminUpdateFeesSettings({
         bulk_billing_available: bulkBillingAvailable,
         bulk_billing_details: bulkBillingDetails,

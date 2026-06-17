@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import Hero from '@/components/home/Hero'
-import QuickBooking from '@/components/home/QuickBooking'
 
 // Below-the-fold sections: split into separate JS chunks
 const DoctorHighlights = dynamic(() => import('@/components/home/DoctorHighlights'))
@@ -33,7 +32,6 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
-        <QuickBooking />
         <DoctorHighlights />
         <ServicesOverview />
         <FAQSection />

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 interface ApiState<T> {
   data: T | null
@@ -12,14 +12,20 @@ export function useApi<T>(
   deps: unknown[] = []
 ): ApiState<T> & { refetch: () => void } {
   const [state, setState] = useState<ApiState<T>>({ data: null, loading: true, error: null })
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => { mountedRef.current = false }
+  }, [])
 
   const fetch = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }))
     try {
       const res = await apiFn()
-      setState({ data: res.data, loading: false, error: null })
+      if (mountedRef.current) setState({ data: res.data, loading: false, error: null })
     } catch {
-      setState({ data: null, loading: false, error: 'Failed to load data. Please try again.' })
+      if (mountedRef.current) setState({ data: null, loading: false, error: 'Failed to load data. Please try again.' })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)

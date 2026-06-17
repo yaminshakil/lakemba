@@ -13,25 +13,25 @@ const TTL = 15 * 60 * 1000
 const SS_PREFIX = 'apicache_'
 
 function ssRead(url: string): { data: any; ts: number } | null {
-  if (typeof sessionStorage === 'undefined') return null
+  if (typeof localStorage === 'undefined') return null
   try {
-    const raw = sessionStorage.getItem(SS_PREFIX + url)
+    const raw = localStorage.getItem(SS_PREFIX + url)
     if (!raw) return null
     return JSON.parse(raw)
   } catch { return null }
 }
 
 function ssWrite(url: string, data: any) {
-  if (typeof sessionStorage === 'undefined') return
-  try { sessionStorage.setItem(SS_PREFIX + url, JSON.stringify({ data, ts: Date.now() })) } catch {}
+  if (typeof localStorage === 'undefined') return
+  try { localStorage.setItem(SS_PREFIX + url, JSON.stringify({ data, ts: Date.now() })) } catch {}
 }
 
 function ssDelete(prefix: string) {
-  if (typeof sessionStorage === 'undefined') return
+  if (typeof localStorage === 'undefined') return
   try {
-    Object.keys(sessionStorage)
+    Object.keys(localStorage)
       .filter(k => k.startsWith(SS_PREFIX + prefix))
-      .forEach(k => sessionStorage.removeItem(k))
+      .forEach(k => localStorage.removeItem(k))
   } catch {}
 }
 
@@ -54,8 +54,11 @@ async function cachedGet<T>(url: string): Promise<T> {
   // 4. Network fetch — shared across concurrent callers
   const promise = api.get<T>(url)
     .then(res => {
-      cache.set(url, { data: res.data, ts: Date.now() })
-      ssWrite(url, res.data)
+      // Only write to cache if bustCache hasn't removed this URL while in-flight
+      if (pending.has(url)) {
+        cache.set(url, { data: res.data, ts: Date.now() })
+        ssWrite(url, res.data)
+      }
       return res.data
     })
     .finally(() => pending.delete(url))
@@ -66,6 +69,7 @@ async function cachedGet<T>(url: string): Promise<T> {
 
 export function bustCache(prefix: string) {
   cache.forEach((_, key) => { if (key.startsWith(prefix)) cache.delete(key) })
+  pending.forEach((_, key) => { if (key.startsWith(prefix)) pending.delete(key) })
   ssDelete(prefix)
 }
 

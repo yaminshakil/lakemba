@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Upload } from 'lucide-react'
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { adminCreateBlogPost } from '@/lib/api'
+import { adminCreateBlogPost, bustCache } from '@/lib/api'
 
 const CATEGORIES = ['Healthcare Tips', "Women's Health", 'Chronic Disease', "Children's Health", 'Mental Health', 'Travel Medicine', 'General']
 
@@ -39,6 +39,7 @@ export default function NewBlogPostPage() {
       const data = new FormData(formEl)
       data.set('is_published', form.is_published ? '1' : '0')
       await adminCreateBlogPost(data)
+      bustCache('/blog')
       router.push('/admin/blog')
     } catch { alert('Failed to save post.') }
     finally { setSaving(false) }

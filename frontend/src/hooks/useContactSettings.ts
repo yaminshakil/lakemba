@@ -11,6 +11,10 @@ export interface ContactSettings {
   state:          string
   hoursMF:        string
   hoursSat:       string
+  hoursSun:       string
+  facebookUrl:    string
+  instagramUrl:   string
+  twitterUrl:     string
 }
 
 const DEFAULTS: ContactSettings = {
@@ -22,6 +26,10 @@ const DEFAULTS: ContactSettings = {
   state:          'NSW',
   hoursMF:        'Mon–Fri 8:30am–6:00pm',
   hoursSat:       'Sat 9:00am–1:00pm',
+  hoursSun:       '',
+  facebookUrl:    '',
+  instagramUrl:   '',
+  twitterUrl:     '',
 }
 
 export function useContactSettings(): ContactSettings {
@@ -30,7 +38,7 @@ export function useContactSettings(): ContactSettings {
   useEffect(() => {
     getSettings()
       .then(res => {
-        const s = (res.data ?? {}) as Record<string, string>
+        const s = ((res as any)?.data ?? res ?? {}) as Record<string, string>
         const suburb   = s.suburb   || 'Lakemba'
         const state    = s.state    || 'NSW'
         const postcode = s.postcode || '2195'
@@ -42,8 +50,12 @@ export function useContactSettings(): ContactSettings {
           address:        `${street}, ${suburb} ${state} ${postcode}`,
           suburb,
           state,
-          hoursMF:  s.hours_mon_fri || DEFAULTS.hoursMF,
-          hoursSat: s.hours_sat     || DEFAULTS.hoursSat,
+          hoursMF:      s.hours_mon_fri  || DEFAULTS.hoursMF,
+          hoursSat:     s.hours_sat      || DEFAULTS.hoursSat,
+          hoursSun:     s.hours_sun      || DEFAULTS.hoursSun,
+          facebookUrl:  s.facebook_url   || '',
+          instagramUrl: s.instagram_url  || '',
+          twitterUrl:   s.twitter_url    || '',
         })
       })
       .catch(() => {})

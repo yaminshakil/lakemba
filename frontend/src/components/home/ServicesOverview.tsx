@@ -70,7 +70,7 @@ export default function ServicesOverview() {
               src={bgImage}
               alt=""
               className="w-full h-full object-cover"
-              onError={() => { console.warn('[ServicesOverview] image failed to load:', bgImage); setBgImage(null) }}
+              onError={() => setBgImage(null)}
             />
           ) : (
             // Fallback gradient when no image is uploaded or image fails to load

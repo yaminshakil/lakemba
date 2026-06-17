@@ -117,8 +117,8 @@ export default function TermsPage() {
               <p>If you have any questions about these Terms of Use, please contact us:</p>
               <div className="mt-3 p-4 bg-[#EBF4FC] rounded-xl">
                 <p className="font-semibold text-[#1B72B5]">Lakemba General Medical Practice</p>
-                <p className="text-sm mt-1">Phone: <a href="tel:+61297591234" className="text-[#1B72B5] hover:underline">(02) 9759 1234</a></p>
-                <p className="text-sm">Location: Lakemba, NSW 2195</p>
+                <p className="text-sm mt-1">Phone: <a href="tel:+61272651000" className="text-[#1B72B5] hover:underline">02 7265 1000</a></p>
+                <p className="text-sm">Location: 21 Haldon Street, Lakemba, NSW 2195</p>
               </div>
             </section>
 

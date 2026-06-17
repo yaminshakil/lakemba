@@ -20,6 +20,7 @@ export default function AdminTestimonialsPage() {
     setSaving(true)
     try {
       await adminCreateTestimonial(form)
+      bustCache('/testimonials')
       refetch()
       setShowForm(false)
       setForm({ patient_name: '', rating: 5, review: '', service: '', date: '', is_featured: false })

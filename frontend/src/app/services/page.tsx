@@ -72,8 +72,10 @@ interface ApiService {
 }
 
 async function fetchServices(): Promise<ApiService[] | null> {
+  const base = process.env.NEXT_PUBLIC_API_URL
+  if (!base) return null
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/services`, { cache: 'no-store' })
+    const res = await fetch(`${base}/services`, { cache: 'no-store' })
     if (!res.ok) return null
     const json = await res.json()
     const rows: ApiService[] = json.data ?? []

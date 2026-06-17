@@ -86,7 +86,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
               {/* Content */}
               <div className="prose prose-slate max-w-none prose-headings:text-primary-900 prose-a:text-teal-600"
-                dangerouslySetInnerHTML={{ __html: (post.content || '').replace(/\n/g, '<br/>') }}
+                dangerouslySetInnerHTML={{ __html: (post.content || '')
+                  .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                  .replace(/\son\w+="[^"]*"/gi, '')
+                  .replace(/\n/g, '<br/>') }}
               />
 
               {/* Tags */}

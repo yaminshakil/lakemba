@@ -4,7 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Upload } from 'lucide-react'
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { getBlogPostById, adminUpdateBlogPost } from '@/lib/api'
+import { getBlogPostById, adminUpdateBlogPost, bustCache } from '@/lib/api'
 import { getImageUrl } from '@/lib/utils'
 
 const CATEGORIES = ['Healthcare Tips', "Women's Health", 'Chronic Disease', "Children's Health", 'Mental Health', 'Travel Medicine', 'General']
@@ -49,6 +49,7 @@ export default function EditBlogPostPage() {
       const data = new FormData(formEl)
       data.set('is_published', form.is_published ? '1' : '0')
       await adminUpdateBlogPost(Number(id), data)
+      bustCache('/blog')
       router.push('/admin/blog')
     } catch { alert('Failed to save post.') }
     finally { setSaving(false) }

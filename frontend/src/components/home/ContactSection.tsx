@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle2 } from 'lucide-react'
+import React, { useState } from 'react'
+import { MapPin, Phone, Mail, Clock, Printer, Send, CheckCircle2 } from 'lucide-react'
 import SectionTitle from '@/components/ui/SectionTitle'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import { submitContactForm } from '@/lib/api'
@@ -12,16 +12,18 @@ export default function ContactSection() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setError(null)
     try {
       await submitContactForm(form)
       setSubmitted(true)
       setForm({ name: '', email: '', phone: '', message: '' })
     } catch {
-      // silent fail for demo
+      setError('Failed to send message. Please try again or call us directly.')
     } finally {
       setSubmitting(false)
     }
@@ -51,12 +53,12 @@ export default function ContactSection() {
 
               {/* Contact details */}
               <div className="card p-6 space-y-4">
-                {[
-                  { icon: MapPin, label: 'Address',      value: contact.address },
-                  { icon: Phone,  label: 'Phone',        value: contact.phonePrimary,  href: toTelHref(contact.phonePrimary) },
-                  { icon: Mail,   label: 'Email',        value: contact.emailPrimary,  href: `mailto:${contact.emailPrimary}` },
-                  { icon: Clock,  label: 'Opening Hours',value: `${contact.hoursMF}, ${contact.hoursSat}` },
-                ].map(({ icon: Icon, label, value, href }) => (
+                {([
+                  { icon: MapPin,   label: 'Address',    value: contact.address },
+                  { icon: Phone,    label: 'Phone',      value: contact.phonePrimary,   href: toTelHref(contact.phonePrimary) },
+                  ...(contact.phoneSecondary ? [{ icon: Printer, label: 'Fax', value: contact.phoneSecondary, href: undefined }] : []),
+                  { icon: Mail,     label: 'Email',      value: contact.emailPrimary,   href: `mailto:${contact.emailPrimary}` },
+                ] as { icon: React.ElementType; label: string; value: string; href?: string }[]).map(({ icon: Icon, label, value, href }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-medical-light flex items-center justify-center shrink-0">
                       <Icon className="w-4 h-4 text-primary-700" />
@@ -70,6 +72,28 @@ export default function ContactSection() {
                     </div>
                   </div>
                 ))}
+
+                {/* Opening hours — shown as individual day/time rows */}
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-medical-light flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4 text-primary-700" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400 mb-1.5">Opening Hours</div>
+                    <div className="space-y-1">
+                      {([
+                        { day: 'Mon–Fri',  time: contact.hoursMF },
+                        { day: 'Saturday', time: contact.hoursSat },
+                        { day: 'Sunday',   time: contact.hoursSun },
+                      ] as { day: string; time: string }[]).filter(r => r.time).map(({ day, time }) => (
+                        <div key={day} className="flex items-center gap-3 text-sm">
+                          <span className="text-gray-500 font-medium w-20 shrink-0">{day}</span>
+                          <span className="text-gray-800 font-medium">{time}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </AnimatedSection>
@@ -110,6 +134,9 @@ export default function ContactSection() {
                       <label className="label">Message *</label>
                       <textarea className="input h-32 resize-none" placeholder="How can we help you?" required value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} />
                     </div>
+                    {error && (
+                      <p className="text-red-600 text-sm bg-red-50 rounded-xl px-4 py-3">{error}</p>
+                    )}
                     <button type="submit" disabled={submitting} className="btn-primary w-full justify-center">
                       {submitting ? (
                         <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</>

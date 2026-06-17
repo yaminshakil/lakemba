@@ -14,7 +14,7 @@ const SECTIONS = [
     title: 'Contact Information',
     fields: [
       { key: 'phone_primary',   label: 'Primary Phone',   type: 'tel',  placeholder: '(02) 9759 1234' },
-      { key: 'phone_secondary', label: 'Secondary Phone',  type: 'tel',  placeholder: '(02) 9759 1235' },
+      { key: 'phone_secondary', label: 'Fax Number',        type: 'tel',  placeholder: '(02) 9759 1235' },
       { key: 'email_primary',   label: 'Primary Email',   type: 'email',placeholder: 'info@lakembagmp.com.au' },
       { key: 'address',         label: 'Street Address',  type: 'text', placeholder: '18 The Boulevarde' },
       { key: 'suburb',          label: 'Suburb',          type: 'text', placeholder: 'Lakemba' },
@@ -125,6 +125,7 @@ function LogoUploadSection() {
       fd.append('logo', file)
       const res = await adminUploadLogo(fd)
       const url = res.data?.data?.logo_url
+      bustCache('/settings')
       setCurrentLogo(url)
       setPreview(null)
       setFile(null)
@@ -230,7 +231,8 @@ function HeroImageSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const img = res.data?.metadata?.image as string | undefined
+        const section = (res as any)?.data ?? res ?? {}
+        const img = section?.metadata?.image as string | undefined
         if (img) setCurrentImage(getImageUrl(img))
       })
       .catch(() => {})
@@ -373,7 +375,8 @@ function ServicesImageSection() {
   useEffect(() => {
     getHomepageSection('services')
       .then(res => {
-        const img = res.data?.metadata?.image as string | undefined
+        const section = (res as any)?.data ?? res ?? {}
+        const img = section?.metadata?.image as string | undefined
         if (img) setCurrentImage(getImageUrl(img))
       })
       .catch(() => {})
@@ -519,7 +522,8 @@ function QuickBookingContentSection() {
   useEffect(() => {
     getHomepageSection('quick_booking')
       .then(res => {
-        const m = (res.data?.metadata ?? {}) as Record<string, string>
+        const section = (res as any)?.data ?? res ?? {}
+        const m = (section?.metadata ?? {}) as Record<string, string>
         setFields({
           badge_text:       m.badge_text       || QB_DEFAULTS.badge_text,
           heading:          m.heading          || QB_DEFAULTS.heading,
@@ -597,17 +601,12 @@ function QuickBookingContentSection() {
 }
 
 const HERO_DEFAULTS = {
-  clinic_name:         'Lakemba General Medical Practice',
-  tagline_prefix:      'Healthcare for',
-  tagline_highlight:   'Every Generation',
-  description:         'Trusted, compassionate general practice in the heart of Lakemba. Expert care for every member of your family — from routine check-ups to complex health needs.',
-  cta_primary_text:    'Book Appointment',
-  phone:               '(02) 9759 1234',
-  hours:               'Mon–Fri 8:30am–6pm',
-  location:            'Lakemba NSW 2195',
-  info_card_main:      'Lakemba General Medical Practice is open 6 days a week, and provides quality healthcare to the local community. Our team of highly experienced GPs offer a range of healthcare services including chronic disease management, mental health, men\'s health, women\'s health, skin checks, and vaccinations.',
-  info_card_secondary: 'Same-day appointments are available, and we accept walk-ins. The practice is wheelchair accessible with public transport stops nearby. Bulk billing is available for eligible patients.',
-  info_card_notice:    'If you are experiencing any acute respiratory symptoms please wear a mask and notify reception on arrival.',
+  clinic_name:       'Lakemba General Medical Practice',
+  tagline_prefix:    'Healthcare for',
+  tagline_highlight: 'Every Generation',
+  description:       'Trusted, compassionate general practice in the heart of Lakemba. Expert care for every member of your family — from routine check-ups to complex health needs.',
+  cta_primary_text:  'Book Appointment',
+  location:          'Lakemba NSW 2195',
 }
 
 function HeroContentSection() {
@@ -618,19 +617,15 @@ function HeroContentSection() {
   useEffect(() => {
     getHomepageSection('hero')
       .then(res => {
-        const m = (res.data?.metadata ?? {}) as Record<string, any>
+        const section = (res as any)?.data ?? res ?? {}
+        const m = (section?.metadata ?? {}) as Record<string, any>
         setFields({
-          clinic_name:         m.clinic_name         || HERO_DEFAULTS.clinic_name,
-          tagline_prefix:      m.tagline_prefix      || HERO_DEFAULTS.tagline_prefix,
-          tagline_highlight:   m.tagline_highlight   || HERO_DEFAULTS.tagline_highlight,
-          description:         m.description         || HERO_DEFAULTS.description,
-          cta_primary_text:    m.cta_primary_text    || HERO_DEFAULTS.cta_primary_text,
-          phone:               m.phone               || HERO_DEFAULTS.phone,
-          hours:               m.hours               || HERO_DEFAULTS.hours,
-          location:            m.location            || HERO_DEFAULTS.location,
-          info_card_main:      m.info_card_main      || HERO_DEFAULTS.info_card_main,
-          info_card_secondary: m.info_card_secondary || HERO_DEFAULTS.info_card_secondary,
-          info_card_notice:    m.info_card_notice    || HERO_DEFAULTS.info_card_notice,
+          clinic_name:       m.clinic_name       || HERO_DEFAULTS.clinic_name,
+          tagline_prefix:    m.tagline_prefix    || HERO_DEFAULTS.tagline_prefix,
+          tagline_highlight: m.tagline_highlight || HERO_DEFAULTS.tagline_highlight,
+          description:       m.description       || HERO_DEFAULTS.description,
+          cta_primary_text:  m.cta_primary_text  || HERO_DEFAULTS.cta_primary_text,
+          location:          m.location          || HERO_DEFAULTS.location,
         })
       })
       .catch(() => {})
@@ -646,6 +641,19 @@ function HeroContentSection() {
       bustCache('/homepage/hero')
       setStatus('saved')
       setTimeout(() => setStatus('idle'), 3000)
+      // Re-fetch in background so localStorage is seeded with saved data (prevents stale cache on refresh)
+      getHomepageSection('hero').then(res => {
+        const section = (res as any)?.data ?? res ?? {}
+        const m = (section?.metadata ?? {}) as Record<string, any>
+        setFields({
+          clinic_name:       m.clinic_name       || HERO_DEFAULTS.clinic_name,
+          tagline_prefix:    m.tagline_prefix    || HERO_DEFAULTS.tagline_prefix,
+          tagline_highlight: m.tagline_highlight || HERO_DEFAULTS.tagline_highlight,
+          description:       m.description       || HERO_DEFAULTS.description,
+          cta_primary_text:  m.cta_primary_text  || HERO_DEFAULTS.cta_primary_text,
+          location:          m.location          || HERO_DEFAULTS.location,
+        })
+      }).catch(() => {})
     } catch {
       setStatus('error')
       setTimeout(() => setStatus('idle'), 4000)
@@ -698,37 +706,15 @@ function HeroContentSection() {
             </div>
 
             <div>
-              <label className="label">Phone Number</label>
-              <input className="input" placeholder="(02) 9759 1234" value={fields.phone} onChange={e => set('phone', e.target.value)} />
-            </div>
-            <div>
               <label className="label">Book Button Text</label>
               <input className="input" placeholder="Book Appointment" value={fields.cta_primary_text} onChange={e => set('cta_primary_text', e.target.value)} />
-            </div>
-            <div>
-              <label className="label">Hours Pill</label>
-              <input className="input" placeholder="Mon–Fri 8:30am–6pm" value={fields.hours} onChange={e => set('hours', e.target.value)} />
             </div>
             <div>
               <label className="label">Location Pill</label>
               <input className="input" placeholder="Lakemba NSW 2195" value={fields.location} onChange={e => set('location', e.target.value)} />
             </div>
-
-            <p className="sm:col-span-2 text-xs font-bold text-gray-400 uppercase tracking-widest border-t border-gray-100 pt-4">
-              Information Card (below hero)
-            </p>
-
-            <div className="sm:col-span-2">
-              <label className="label">Main paragraph</label>
-              <textarea className="input h-28 resize-none" value={fields.info_card_main} onChange={e => set('info_card_main', e.target.value)} />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="label">Secondary paragraph</label>
-              <textarea className="input h-20 resize-none" value={fields.info_card_secondary} onChange={e => set('info_card_secondary', e.target.value)} />
-            </div>
-            <div className="sm:col-span-2">
-              <label className="label">Notice (italic)</label>
-              <input className="input" value={fields.info_card_notice} onChange={e => set('info_card_notice', e.target.value)} />
+            <div className="sm:col-span-2 rounded-lg bg-blue-50 border border-blue-100 px-4 py-3 text-xs text-blue-700">
+              The <span className="font-semibold">Phone number</span> and <span className="font-semibold">Opening Hours</span> shown on the hero are pulled from <span className="font-semibold">Contact Information</span> and <span className="font-semibold">Opening Hours</span> above.
             </div>
 
           </div>
@@ -753,7 +739,10 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     getSettings()
-      .then(res => { if (res.data) setValues(res.data as Record<string, string>) })
+      .then(res => {
+        const data = ((res as any)?.data ?? res ?? {}) as Record<string, string>
+        if (Object.keys(data).length > 0) setValues(data)
+      })
       .catch(() => {})
   }, [])
 

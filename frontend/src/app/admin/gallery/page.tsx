@@ -41,6 +41,7 @@ export default function AdminGalleryPage() {
         fd.append('category', p.category)
         await adminUploadGalleryImage(fd)
       }
+      bustCache('/gallery')
       setPreviews([])
       refetch()
     } catch { alert('Upload failed.') }

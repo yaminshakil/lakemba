@@ -74,8 +74,11 @@ export default function BlogPage() {
                 : filtered.map((post, i) => (
                     <AnimatedSection key={post.id} delay={i * 0.07}>
                       <motion.div whileHover={{ y: -4 }} className="card overflow-hidden group h-full flex flex-col">
-                        <div className="relative aspect-video overflow-hidden">
-                          <Image src={getImageUrl(post.image)} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 33vw" />
+                        <div className="relative aspect-video overflow-hidden bg-medical-light">
+                          {post.image
+                            ? <Image src={getImageUrl(post.image)} alt={post.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 33vw" />
+                            : <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-50" />
+                          }
                           <div className="absolute top-3 left-3">
                             <span className="badge bg-white text-primary-800 shadow-sm flex items-center gap-1">
                               <Tag className="w-2.5 h-2.5" /> {post.category}

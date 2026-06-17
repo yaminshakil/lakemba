@@ -60,7 +60,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
               >
                 {doctor.image
                   ? <Image src={getImageUrl(doctor.image)} alt={doctor.name} width={144} height={144} className="object-cover w-full h-full" />
-                  : (doctor.name || '').split(' ').slice(1).map(n => n[0]).join('')
+                  : (doctor.name || '').split(' ').filter(n => !/^dr\.?$/i.test(n)).map(n => n[0]).join('').slice(0, 2) || (doctor.name || '?')[0]
                 }
               </motion.div>
               <div className="flex-1 min-w-0">

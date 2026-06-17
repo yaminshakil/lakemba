@@ -7,27 +7,40 @@ import { Phone, Menu, X, ChevronDown, Calendar } from 'lucide-react'
 import { cn, getImageUrl, openHEBooking, toTelHref } from '@/lib/utils'
 import { getSetting } from '@/lib/api'
 import { useContactSettings } from '@/hooks/useContactSettings'
+import { getHomepageSection } from '@/lib/api'
 
 type NavItem = { label: string; href: string; children?: { label: string; href: string }[] }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Home',      href: '/' },
-  { label: 'About',     href: '/about' },
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
-  { label: 'Doctors',     href: '/doctors' },
+  { label: 'Doctors', href: '/doctors' },
   { label: 'Fees & Info', href: '/fees-information' },
-  { label: 'Contact',     href: '/contact' },
+  { label: 'Contact', href: '/contact' },
 ]
 
+const DEFAULTS = {
+  clinicName: 'Lakemba General Medical Practice',
+}
+
 export default function Header() {
-  const [menuOpen, setMenuOpen]         = useState(false)
-  const [activeDropdown, setDropdown]   = useState<string | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [activeDropdown, setDropdown] = useState<string | null>(null)
   const [openMobileSection, setSection] = useState<string | null>(null)
-  const [logoUrl, setLogoUrl]           = useState<string | null>(null)
+  const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
   const pathname = usePathname()
-  const contact  = useContactSettings()
+  const contact = useContactSettings()
+  const [content, setContent] = useState(DEFAULTS)
 
   useEffect(() => { setMenuOpen(false); setDropdown(null); setSection(null) }, [pathname])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   useEffect(() => {
     const cached = localStorage.getItem('site_logo_url')
@@ -42,14 +55,26 @@ export default function Header() {
           localStorage.setItem('site_logo_url', url)
         }
       })
-      .catch(() => {})
+      .catch(() => { });
+    getHomepageSection('hero')
+      .then(res => {
+        const section = (res as any)?.data ?? res ?? {}
+        const m = (section?.metadata ?? {}) as Record<string, any>
+        setContent({
+          clinicName: m.clinic_name || DEFAULTS.clinicName,
+        })
+      })
+      .catch(() => { })
   }, [])
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md border-b border-gray-200">
 
-      {/* Top info bar */}
-      <div className="bg-primary-500 text-white text-xs">
+      {/* Top info bar — collapses on scroll */}
+      <div
+        className="bg-primary-500 text-white text-xs overflow-hidden transition-[max-height] duration-300 ease-out"
+        style={{ maxHeight: scrolled ? '0px' : '64px' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-2">
             <div className="flex items-center gap-4">
@@ -58,7 +83,7 @@ export default function Header() {
                 <a href={toTelHref(contact.phonePrimary)} className="hover:text-white/80 font-medium">{contact.phonePrimary}</a>
               </span>
               <span className="hidden sm:block text-white/80">
-                Mon – Fri: 8:30am – 6:00pm &nbsp;|&nbsp; Sat: 9:00am – 1:00pm
+                {content.clinicName}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -89,8 +114,8 @@ export default function Header() {
                 <img src={logoUrl} alt="Lakemba GMP logo" className="h-full w-auto object-contain" fetchPriority="high" />
               ) : (
                 <svg viewBox="0 0 32 32" className="w-8 h-8 fill-primary-500">
-                  <path d="M16 2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 0 4h-4v4a2 2 0 0 1-4 0v-4H10a2 2 0 0 1 0-4h4V4a2 2 0 0 1 2-2z"/>
-                  <path d="M6 18a10 10 0 1 0 20 0H6z" opacity=".6"/>
+                  <path d="M16 2a2 2 0 0 1 2 2v4h4a2 2 0 0 1 0 4h-4v4a2 2 0 0 1-4 0v-4H10a2 2 0 0 1 0-4h4V4a2 2 0 0 1 2-2z" />
+                  <path d="M6 18a10 10 0 1 0 20 0H6z" opacity=".6" />
                 </svg>
               )}
             </div>
@@ -206,7 +231,7 @@ export default function Header() {
                         transition={{ duration: 0.2 }}
                         className="pl-4 mt-1 flex flex-col gap-0.5 overflow-hidden"
                       >
-                        {item.children.slice(0, -1).map((child) => (
+                        {item.children.map((child) => (
                           <Link key={child.href} href={child.href}
                             className="block px-4 py-2 rounded-lg text-xs text-gray-600 hover:text-primary-500 hover:bg-medical-light transition-colors">
                             {child.label}

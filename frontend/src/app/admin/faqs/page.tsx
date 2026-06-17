@@ -39,6 +39,7 @@ export default function AdminFaqsPage() {
     try {
       if (editing) await adminUpdateFaq(editing.id, form)
       else await adminCreateFaq(form)
+      bustCache('/faqs')
       refetch(); setShowForm(false)
     } catch { alert('Failed to save FAQ.') }
     finally { setSaving(false) }
