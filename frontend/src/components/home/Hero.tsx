@@ -112,7 +112,7 @@ export default function Hero() {
             {/* Clinic name — small green label */}
             <motion.p
               variants={fadeUp}
-              className="text-[#8BC53F] text-sm sm:text-base font-semibold uppercase tracking-[0.15em] mb-3 sm:mb-4"
+              className="text-[#8BC53F] text-base sm:text-lg font-semibold uppercase tracking-[0.15em] mb-3 sm:mb-4"
             >
               {content.clinicName}
             </motion.p>
@@ -120,7 +120,7 @@ export default function Hero() {
             {/* Tagline — true hero heading, much larger */}
             <motion.h1
               variants={fadeUp}
-              className="font-[family-name:var(--font-playfair)] leading-[1.15] mb-5 sm:mb-6 text-[clamp(1.3rem,5.5vw,3.2rem)] whitespace-nowrap"
+              className="font-[family-name:var(--font-playfair)] leading-[1.15] mb-5 sm:mb-6 text-[clamp(1.3rem,5.5vw,3.2rem)] sm:whitespace-nowrap"
             >
               <span className="text-white font-bold">{content.taglinePrefix} </span>
               <span className="relative inline-block">
