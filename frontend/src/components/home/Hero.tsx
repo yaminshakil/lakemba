@@ -120,7 +120,7 @@ export default function Hero() {
             {/* Tagline — true hero heading, much larger */}
             <motion.h1
               variants={fadeUp}
-              className="font-[family-name:var(--font-playfair)] leading-[1.15] mb-5 sm:mb-6 text-[clamp(1.3rem,5.5vw,3.2rem)]"
+              className="font-[family-name:var(--font-playfair)] leading-[1.15] mb-5 sm:mb-6 text-[clamp(1.3rem,2.7vw,2.1rem)] sm:whitespace-nowrap"
             >
               <span className="text-white font-bold">{content.taglinePrefix} </span>
               <span className="relative inline-block">
